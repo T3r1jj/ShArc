@@ -1,0 +1,25 @@
+group 'io.github.t3r1jj'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.1.4-eap-54'
+
+    repositories {
+        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.1' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin2js'
+
+repositories {
+    maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.1' }
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
+}
