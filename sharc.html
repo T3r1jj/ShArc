@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sharc - shell arcs</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="out/production/classes/lib/kotlin.js"></script>
+    <script type="text/javascript" src="out/production/classes/sharc.js"></script>
+</head>
+<body>
+<div id="arcsChart"></div>
+<div id="timeChart"></div>
+<script>
+    var kievCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.130, 33.4, 870));
+    var akizukiCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.1, 13, 1000));
+    var z23Calculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.150, 45, 835));
+    var yamatoCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.460, 1460, 780));
+    var shimaCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.127, 23, 915));
+    z23Calculator.calculateArcs();
+    var data5z23 = {
+        x: z23Calculator.getXCoordinates(8800),
+        y: z23Calculator.getYCoordinates(8800),
+        type: 'scatter',
+        name: 'z23 5*'
+    };
+    var data5tz23 = {
+        x: z23Calculator.getXCoordinates(8800),
+        y: z23Calculator.getTime(8800),
+        type: 'scatter',
+        name: 'z23 5*'
+    };
+    kievCalculator.calculateArcs();
+    var data5 = {
+        x: kievCalculator.getXCoordinates(8800),
+        y: kievCalculator.getYCoordinates(8800),
+        type: 'scatter',
+        name: 'Kiev 5*'
+    };
+    var data5t = {
+        x: kievCalculator.getXCoordinates(8800),
+        y: kievCalculator.getTime(8800),
+        type: 'scatter',
+        name: 'Kiev 5*'
+    };
+    akizukiCalculator.calculateArcs();
+    var data5akizuki = {
+        x: akizukiCalculator.getXCoordinates(8800),
+        y: akizukiCalculator.getYCoordinates(8800),
+        type: 'scatter',
+        name: 'Akizuki 5*'
+    };
+    var data5takizuki = {
+        x: akizukiCalculator.getXCoordinates(8800),
+        y: akizukiCalculator.getTime(8800),
+        type: 'scatter',
+        name: 'Akizuki 5*'
+    };
+    yamatoCalculator.calculateArcs();
+    var data5yamato = {
+        x: yamatoCalculator.getXCoordinates(8800),
+        y: yamatoCalculator.getYCoordinates(8800),
+        type: 'scatter',
+        name: 'yamato 5*'
+    };
+    var data5tyamato = {
+        x: yamatoCalculator.getXCoordinates(8800),
+        y: yamatoCalculator.getTime(8800),
+        type: 'scatter',
+        name: 'yamato 5*'
+    };
+    shimaCalculator.calculateArcs();
+    var data5shima = {
+        x: shimaCalculator.getXCoordinates(8800),
+        y: shimaCalculator.getYCoordinates(8800),
+        type: 'scatter',
+        name: 'shima 5*'
+    };
+    var data5tshima = {
+        x: shimaCalculator.getXCoordinates(8800),
+        y: shimaCalculator.getTime(8800),
+        type: 'scatter',
+        name: 'shima 5*'
+    };
+    Plotly.newPlot('arcsChart', [data5, data5akizuki, data5z23, data5yamato, data5shima], {title: "Shell arcs"});
+    Plotly.newPlot('timeChart', [data5t, data5takizuki, data5tz23, data5tyamato, data5tshima], {title: "Fly time"});
+</script>
+</body>
+</html>
