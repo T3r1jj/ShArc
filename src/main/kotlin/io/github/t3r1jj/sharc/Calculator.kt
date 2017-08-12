@@ -5,44 +5,45 @@ import kotlin.js.Math
 class Calculator(private val shell: Shell) {
 
     companion object {
-        val g = 9.81
-        val T = 288
-        val L = 0.0065
-        val p = 101325
-        val R = 8.31447
-        val M = 0.0289644
-        val TIME_SCALE = 3.0
+        private val g = 9.81
+        private val T = 288
+        private val L = 0.0065
+        private val p = 101325
+        private val R = 8.31447
+        private val M = 0.0289644
+        private val dt = 0.1
+        private val TIME_SCALE = 3.0
     }
 
     private val xCoordinates = ArrayList<Double>()
     @JsName("getXCoordinates")
-    fun getXCoordinates(distance: Number): Array<Double> = xAngleCoordinates[findClosestIndex(distance.toDouble())]
+    fun getXCoordinates(distance: Number): Array<Double> = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
 
     private val yCoordinates = ArrayList<Double>()
     @JsName("getYCoordinates")
-    fun getYCoordinates(distance: Number): Array<Double> = yAngleCoordinates[findClosestIndex(distance.toDouble())]
+    fun getYCoordinates(distance: Number): Array<Double> = yAngleCoordinates!![findClosestIndex(distance.toDouble())]
 
     @JsName("getCalculatedDistance")
     fun getCalculatedDistance(distance: Number): Double {
-        val xCoordinates = xAngleCoordinates[findClosestIndex(distance.toDouble())]
+        val xCoordinates = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
         return xCoordinates[xCoordinates.lastIndex]
     }
 
     private val time = ArrayList<Double>()
     @JsName("getTime")
-    fun getTime(distance: Number): Array<Double> = angleTimes[findClosestIndex(distance.toDouble())]
+    fun getTime(distance: Number): Array<Double> = angleTimes!![findClosestIndex(distance.toDouble())]
 
-    private val dt = 0.1
+    var xAngleCoordinates : Array<Array<Double>>? = null
+    var yAngleCoordinates : Array<Array<Double>>? = null
+    var angleTimes : Array<Array<Double>>? = null
 
-    private val xAngleCoordinates = ArrayList<Array<Double>>()
-    private val yAngleCoordinates = ArrayList<Array<Double>>()
-    private val angleTimes = ArrayList<Array<Double>>()
+    fun hasData() : Boolean = xAngleCoordinates != null
 
     private fun findClosestIndex(distance: Double): Int {
         var closestIndex = 0
         var minError = distance
-        for (index in 0..xAngleCoordinates.lastIndex) {
-            val xCoordinates = xAngleCoordinates[index]
+        for (index in 0..xAngleCoordinates!!.lastIndex) {
+            val xCoordinates = xAngleCoordinates!![index]
             val angleDistance = xCoordinates[xCoordinates.lastIndex]
             val currentError = Math.abs(angleDistance - distance)
             if (currentError < minError) {
@@ -56,9 +57,9 @@ class Calculator(private val shell: Shell) {
 
     @JsName("calculateArcs")
     fun calculateArcs() {
-        xAngleCoordinates.clear()
-        yAngleCoordinates.clear()
-        angleTimes.clear()
+        val xAngleCoordinates = ArrayList<Array<Double>>()
+        val yAngleCoordinates = ArrayList<Array<Double>>()
+        val angleTimes = ArrayList<Array<Double>>()
         val maxAngle = 30
         val degreeIterations = 100
         val maxAngleEntries = maxAngle * degreeIterations
@@ -69,6 +70,9 @@ class Calculator(private val shell: Shell) {
             yAngleCoordinates.add(yCoordinates.toTypedArray())
             angleTimes.add(time.toTypedArray())
         }
+        this.xAngleCoordinates = xAngleCoordinates.toTypedArray()
+        this.yAngleCoordinates = yAngleCoordinates.toTypedArray()
+        this.angleTimes = angleTimes.toTypedArray()
     }
 
     @JsName("calculateArc")
@@ -117,7 +121,7 @@ class Calculator(private val shell: Shell) {
             lastError = error
             val innerCalculator = Calculator(shell)
             innerCalculator.calculateArc(angle)
-            error = distance.toDouble() - innerCalculator.xCoordinates[innerCalculator.xAngleCoordinates.lastIndex]
+            error = distance.toDouble() - innerCalculator.xCoordinates[innerCalculator.xAngleCoordinates!!.lastIndex]
             if (error < -maxError) {
                 angle -= angle / 2
             } else if (error > maxError) {
