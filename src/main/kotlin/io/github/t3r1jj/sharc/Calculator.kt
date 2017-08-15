@@ -4,6 +4,13 @@ import kotlin.js.Math
 
 class Calculator(private val shell: Shell) {
 
+    var range = Double.POSITIVE_INFINITY
+    var angleOverRange = false
+
+    constructor(shell: Shell, range: Double) : this(shell) {
+        this.range = range
+    }
+
     companion object {
         private val g = 9.81
         private val T = 288
@@ -57,6 +64,7 @@ class Calculator(private val shell: Shell) {
 
     @JsName("calculateArcs")
     fun calculateArcs() {
+        angleOverRange = false
         val xAngleCoordinates = ArrayList<Array<Double>>()
         val yAngleCoordinates = ArrayList<Array<Double>>()
         val angleTimes = ArrayList<Array<Double>>()
@@ -64,6 +72,9 @@ class Calculator(private val shell: Shell) {
         val degreeIterations = 100
         val maxAngleEntries = maxAngle * degreeIterations
         for (angle in 0..maxAngleEntries) {
+            if (angleOverRange) {
+                break
+            }
             val alpha = (angle.toDouble() / degreeIterations) * Math.PI / 180
             calculateArc(alpha)
             xAngleCoordinates.add(xCoordinates.toTypedArray())
@@ -104,6 +115,10 @@ class Calculator(private val shell: Shell) {
             xCoordinates.add(x)
             yCoordinates.add(y)
             time.add(t / TIME_SCALE)
+
+            if (x > range) {
+                angleOverRange = true
+            }
         }
     }
 
