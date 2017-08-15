@@ -56,6 +56,7 @@ class WarshipsAPI {
             val loadedShips = ArrayList<Ship>()
             for ((id, shipData) in jsonToDynamicMap(json.data)) {
                 val ship = Ship(id, shipData.name, shipData.tier)
+                ship.nation = Ship.Nation.getEnum(shipsSelection.nation)
                 ship.icon = shipData.images.small
                 for (artillery in shipData.modules.artillery as Array<Long>) {
                     ship.artilleryShells.put(artillery.toString(), null)
@@ -93,6 +94,7 @@ class WarshipsAPI {
                         }
                     }
                     if (finished) {
+                        ship.initCalculators()
                         callback()
                     }
                 })

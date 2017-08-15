@@ -12,39 +12,43 @@ class Calculator(private val shell: Shell) {
     }
 
     companion object {
-        private val g = 9.81
-        private val T = 288
-        private val L = 0.0065
-        private val p = 101325
-        private val R = 8.31447
-        private val M = 0.0289644
-        private val dt = 0.1
-        private val TIME_SCALE = 3.0
+        private const val g = 9.81
+        private const val T = 288
+        private const val L = 0.0065
+        private const val p = 101325
+        private const val R = 8.31447
+        private const val M = 0.0289644
+        private const val dt = 0.1
+        private const val TIME_SCALE = 3.0
     }
 
     private val xCoordinates = ArrayList<Double>()
+    private val yCoordinates = ArrayList<Double>()
+    private val time = ArrayList<Double>()
+    private var impactAngle: Double = 0.0
+    private var deckArmor: Double = 0.0
+    private var beltArmor: Double = 0.0
+
+    var xAngleCoordinates: Array<Array<Double>>? = null
+    var yAngleCoordinates: Array<Array<Double>>? = null
+    var angleTimes: Array<Array<Double>>? = null
+    var impactAngles: Array<Double>? = null
+    var deckArmors: Array<Double>? = null
+    var beltArmors: Array<Double>? = null
+
     @JsName("getXCoordinates")
     fun getXCoordinates(distance: Number): Array<Double> = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
-
-    private val yCoordinates = ArrayList<Double>()
     @JsName("getYCoordinates")
     fun getYCoordinates(distance: Number): Array<Double> = yAngleCoordinates!![findClosestIndex(distance.toDouble())]
-
     @JsName("getCalculatedDistance")
     fun getCalculatedDistance(distance: Number): Double {
         val xCoordinates = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
         return xCoordinates[xCoordinates.lastIndex]
     }
-
-    private val time = ArrayList<Double>()
     @JsName("getTime")
     fun getTime(distance: Number): Array<Double> = angleTimes!![findClosestIndex(distance.toDouble())]
 
-    var xAngleCoordinates : Array<Array<Double>>? = null
-    var yAngleCoordinates : Array<Array<Double>>? = null
-    var angleTimes : Array<Array<Double>>? = null
-
-    fun hasData() : Boolean = xAngleCoordinates != null
+    fun hasData(): Boolean = xAngleCoordinates != null
 
     private fun findClosestIndex(distance: Double): Int {
         var closestIndex = 0
@@ -68,6 +72,9 @@ class Calculator(private val shell: Shell) {
         val xAngleCoordinates = ArrayList<Array<Double>>()
         val yAngleCoordinates = ArrayList<Array<Double>>()
         val angleTimes = ArrayList<Array<Double>>()
+        val impactAngles = ArrayList<Double>()
+        val deckArmors = ArrayList<Double>()
+        val beltArmors = ArrayList<Double>()
         val maxAngle = 30
         val degreeIterations = 100
         val maxAngleEntries = maxAngle * degreeIterations
@@ -80,10 +87,16 @@ class Calculator(private val shell: Shell) {
             xAngleCoordinates.add(xCoordinates.toTypedArray())
             yAngleCoordinates.add(yCoordinates.toTypedArray())
             angleTimes.add(time.toTypedArray())
+            impactAngles.add(impactAngle)
+            deckArmors.add(deckArmor)
+            beltArmors.add(beltArmor)
         }
         this.xAngleCoordinates = xAngleCoordinates.toTypedArray()
         this.yAngleCoordinates = yAngleCoordinates.toTypedArray()
         this.angleTimes = angleTimes.toTypedArray()
+        this.impactAngles = impactAngles.toTypedArray()
+        this.deckArmors = deckArmors.toTypedArray()
+        this.beltArmors = beltArmors.toTypedArray()
     }
 
     @JsName("calculateArc")
@@ -120,6 +133,11 @@ class Calculator(private val shell: Shell) {
                 angleOverRange = true
             }
         }
+        val v = Math.sqrt(vY * vY + vX * vX)
+        val hitPen = shell.pen * Math.pow(v, 1.1) * Math.pow(shell.m, 0.55) / Math.pow(shell.D * 1000, 0.65)
+        impactAngle = Math.atan(Math.abs(vY) / Math.abs(vX))
+        beltArmor = Math.cos(impactAngle) * hitPen
+        deckArmor = Math.sin(impactAngle) * hitPen
     }
 
     private fun T(y: Double) = T - L * y
@@ -153,6 +171,20 @@ class Calculator(private val shell: Shell) {
     private fun sign(x: Double): Double = when {
         x > 0 -> 1.0
         x < 0 -> -1.0
+        else -> 0.0
+    }
+
+    @JsName("calculateArmorToActivateFuse")
+    fun calculateArmorToActivateFuse(shell: Shell, ship: Ship) : Double = when (shell.type) {
+        Shell.Type.AP -> when (ship.nation) {
+            Ship.Nation.UK -> shell.D / 12
+            else -> shell.D / 6
+        }
+        Shell.Type.HE -> when (ship.nation) {
+            Ship.Nation.UK -> shell.D / 4
+            Ship.Nation.GERMANY -> shell.D / 4
+            else -> shell.D / 6
+        }
         else -> 0.0
     }
 

@@ -13,13 +13,42 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
             maxRange = Math.max(fireControl.value!!)
         }
         artilleryShells.forEach { artilleryShell ->
+            var maxArtilleryRange = 0.0
+            RangeMod.values().map { rangeMod -> rangeMod.modifyRange(maxRange, artilleryShells.values.first()!!.first()) }.forEach { range -> maxArtilleryRange = Math.max(maxArtilleryRange, range) }
             artilleryShell.value!!.forEach { shell ->
-                shellCalculators.put(shell, Calculator(shell, maxRange)) }
+                shellCalculators.put(shell, Calculator(shell, maxArtilleryRange))
+            }
         }
     }
 
     var icon: String? = null
+    var nation: Nation? = null
 
+    enum class RangeMod(private val modifier: Double) {
+        AFT(1.2),
+        SPOTTING_AIRCRAFT(1.2) {
+            override fun modifyRange(range: Double, shell: Shell): Double {
+                return if (shell.D <= 0.139) {
+                    super.modifyRange(range, shell)
+                } else {
+                    range
+                }
+            }
+        };
 
+        internal open fun modifyRange(range: Double, shell: Shell): Double = range * modifier
+
+    }
+
+    enum class Nation {
+        GERMANY, UK, OTHER;
+        companion object {
+            fun getEnum(id: String) : Nation = when (id) {
+                "germany" -> GERMANY
+                "uk" -> UK
+                else -> OTHER
+            }
+        }
+    }
 }
 

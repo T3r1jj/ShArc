@@ -46,6 +46,7 @@ class WarshipsAPITest {
         api.loadShipArtillery(ship, {
             assertTrue(ship.artilleryShells.isNotEmpty(), "Artillery should not be empty")
             ship.artilleryShells.forEach { fc -> assertFalse(fc.value == null, "Ship artillery shells should be loaded") }
+            ship.artilleryShells.forEach { fc -> fc.value!!.forEach { shell -> assertFalse(shell.type == null, "Shell types should be loaded") } }
         })
     }
 }
