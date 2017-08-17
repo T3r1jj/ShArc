@@ -1,0 +1,12 @@
+.form-row > .form-group {
+    margin: 10px;
+}
+.form-row > .form-group-left  {
+    margin-left: auto;
+}
+.form-row > .form-group-right  {
+    margin-right: auto;
+}
+.main-col {
+    text-align: center;
+}

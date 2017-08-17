@@ -3,86 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>Sharc - shell arcs</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript" src="out/production/classes/lib/kotlin.js"></script>
     <script type="text/javascript" src="out/production/classes/sharc.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+            integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+            integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="sharc.css">
 </head>
 <body>
-<div id="arcsChart"></div>
-<div id="timeChart"></div>
+<div class="col-md-12 main-col">
+    <div class="form-row">
+        <div class="form-group form-group-left">
+            <label for="nation-select" class="col-form-label">Nation</label>
+            <select class="form-control" id="nation-select" onchange="loadShips();">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="type-select" class="col-form-label">Type</label>
+            <select class="form-control" id="type-select" onchange="loadShips();">
+            </select>
+        </div>
+        <div class="form-group form-group-right">
+            <label for="ship-select" class="col-form-label">Ship</label>
+            <select class="form-control" id="ship-select">
+            </select>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary">Add</button>
+</div>
 <script>
-    var kievCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.130, 33.4, 870));
-    var akizukiCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.1, 13, 1000));
-    var z23Calculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.150, 45, 835));
-    var yamatoCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.460, 1460, 780));
-    var shimaCalculator = new sharc.io.github.t3r1jj.sharc.Calculator(new sharc.io.github.t3r1jj.sharc.Shell(0.127, 23, 915));
-    z23Calculator.calculateArcs();
-    var data5z23 = {
-        x: z23Calculator.getXCoordinates(8800),
-        y: z23Calculator.getYCoordinates(8800),
-        type: 'scatter',
-        name: 'z23 5*'
+    var api = new sharc.io.github.t3r1jj.sharc.external.WarshipsAPI();
+    window.onload = function () {
+        api.loadBasicInfo(function () {
+            var nations = api.shipNations;
+            for (var key in nations) {
+                if (nations.hasOwnProperty(key)) {
+                    $("#nation-select").append(new Option(nations[key], key, false, false));
+                }
+            }
+            var shipTypes = api.shipTypes;
+            for (key in shipTypes) {
+                if (shipTypes.hasOwnProperty(key)) {
+                    $("#type-select").append(new Option(shipTypes[key], key, false, false));
+                }
+            }
+            loadShips();
+        });
     };
-    var data5tz23 = {
-        x: z23Calculator.getXCoordinates(8800),
-        y: z23Calculator.getTime(8800),
-        type: 'scatter',
-        name: 'z23 5*'
-    };
-    kievCalculator.calculateArcs();
-    var data5 = {
-        x: kievCalculator.getXCoordinates(8800),
-        y: kievCalculator.getYCoordinates(8800),
-        type: 'scatter',
-        name: 'Kiev 5*'
-    };
-    var data5t = {
-        x: kievCalculator.getXCoordinates(8800),
-        y: kievCalculator.getTime(8800),
-        type: 'scatter',
-        name: 'Kiev 5*'
-    };
-    akizukiCalculator.calculateArcs();
-    var data5akizuki = {
-        x: akizukiCalculator.getXCoordinates(8800),
-        y: akizukiCalculator.getYCoordinates(8800),
-        type: 'scatter',
-        name: 'Akizuki 5*'
-    };
-    var data5takizuki = {
-        x: akizukiCalculator.getXCoordinates(8800),
-        y: akizukiCalculator.getTime(8800),
-        type: 'scatter',
-        name: 'Akizuki 5*'
-    };
-    yamatoCalculator.calculateArcs();
-    var data5yamato = {
-        x: yamatoCalculator.getXCoordinates(8800),
-        y: yamatoCalculator.getYCoordinates(8800),
-        type: 'scatter',
-        name: 'yamato 5*'
-    };
-    var data5tyamato = {
-        x: yamatoCalculator.getXCoordinates(8800),
-        y: yamatoCalculator.getTime(8800),
-        type: 'scatter',
-        name: 'yamato 5*'
-    };
-    shimaCalculator.calculateArcs();
-    var data5shima = {
-        x: shimaCalculator.getXCoordinates(8800),
-        y: shimaCalculator.getYCoordinates(8800),
-        type: 'scatter',
-        name: 'shima 5*'
-    };
-    var data5tshima = {
-        x: shimaCalculator.getXCoordinates(8800),
-        y: shimaCalculator.getTime(8800),
-        type: 'scatter',
-        name: 'shima 5*'
-    };
-    Plotly.newPlot('arcsChart', [data5, data5akizuki, data5z23, data5yamato, data5shima], {title: "Shell arcs"});
-    Plotly.newPlot('timeChart', [data5t, data5takizuki, data5tz23, data5tyamato, data5tshima], {title: "Fly time"});
+
+    function loadShips() {
+        console.log("loadships");
+        var selectedNation = $('#nation-select').find('option:selected').val();
+        var selectedType = $('#type-select').find('option:selected').val();
+        var shipSelection = new sharc.io.github.t3r1jj.sharc.external.WarshipsAPI.ShipsSelection(selectedNation, selectedType);
+        api.loadShips(shipSelection, function () {
+            var ships = api.getShips(shipSelection);
+            var shipSelect = $("#ship-select");
+            shipSelect.empty();
+            for (var i = 0; i < ships.length; i++) {
+                shipSelect.append(new Option(ships[i].name, ships[i].id, false, false));
+            }
+        })
+    }
 </script>
 </body>
 </html>

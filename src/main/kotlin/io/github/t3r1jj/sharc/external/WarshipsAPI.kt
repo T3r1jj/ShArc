@@ -26,11 +26,16 @@ class WarshipsAPI {
 
     private fun WARSHIP_ARTILLERY_ENDPOINT(shipId: String, artilleryId: String): String = "$ROOT_URL/encyclopedia/shipprofile/?application_id=$APP_ID&ship_id=$shipId&artillery_id=$artilleryId&fields=artillery.shells.name%2C+artillery.slots.name%2C+artillery.shells.bullet_speed%2C+artillery.shells.bullet_mass%2C+artillery.shells.type"
 
-    var gameVersion: String? = null
-    var shipTypes: Map<String, String>? = null
-    var shipNations: Map<String, String>? = null
-    var shipTiers = 1..10
-    var ships = HashMap<ShipsSelection, List<Ship>>()
+    var gameVersion: String = ""
+    var shipTypes: dynamic = null
+    var shipNations: dynamic = null
+
+    fun getShipNations() : Map<String, String> = jsonToMap(shipNations)
+    fun getShipTypes() : Map<String, String> = jsonToMap(shipTypes)
+    var ships = HashMap<ShipsSelection, Array<Ship>>()
+
+    @JsName("getShips")
+    fun getShips(shipsSelection: ShipsSelection) : Array<Ship> = ships[shipsSelection]!!
 
     private fun get(url: String, callback: (dynamic) -> Any?) {
         val xmlHttp = XMLHttpRequest()
@@ -42,15 +47,17 @@ class WarshipsAPI {
         xmlHttp.send(null)
     }
 
+    @JsName("loadBasicInfo")
     fun loadBasicInfo(callback: () -> Any?) {
         get(BASIC_INFO_ENDPOINT, { json ->
             gameVersion = json.data.game_version
-            shipTypes = jsonToMap(json.data.ship_types)
-            shipNations = jsonToMap(json.data.ship_nations)
+            shipTypes =json.data.ship_types
+            shipNations = json.data.ship_nations
             callback()
         })
     }
 
+    @JsName("loadShips")
     fun loadShips(shipsSelection: ShipsSelection, callback: () -> Any?) {
         get(WARSHIP_NAMES_ENPOINT(shipsSelection.nation, shipsSelection.type), { json ->
             val loadedShips = ArrayList<Ship>()
@@ -66,11 +73,12 @@ class WarshipsAPI {
                 }
                 loadedShips.add(ship)
             }
-            ships.put(shipsSelection, loadedShips)
+            ships.put(shipsSelection, loadedShips.toTypedArray())
             callback()
         })
     }
 
+    @JsName("loadShipArtillery")
     fun loadShipArtillery(ship: Ship, callback: () -> Any?) {
         for ((artilleryId, value) in ship.artilleryShells) {
             if (value == null) {
@@ -102,6 +110,7 @@ class WarshipsAPI {
         }
     }
 
+    @JsName("loadShipModules")
     fun loadShipModules(ships: List<Ship>, callback: () -> Any?) {
         val moduleIds = ArrayList<String>()
         for (ship in ships) {

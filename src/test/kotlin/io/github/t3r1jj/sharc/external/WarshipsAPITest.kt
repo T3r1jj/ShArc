@@ -12,10 +12,9 @@ class WarshipsAPITest {
     @Test
     fun loadBasicInfo() {
         api.loadBasicInfo {
-            assertFalse(api.gameVersion.isNullOrBlank(), "Game version should be loaded")
+            assertFalse(api.gameVersion.isBlank(), "Game version should be loaded")
             assertFalse(api.shipNations == null, "Ship nations should be loaded")
             assertFalse(api.shipTypes == null, "Ship types should be loaded")
-            assertFalse(api.shipTiers.isEmpty(), "Tiers should be loaded")
         }
     }
 
