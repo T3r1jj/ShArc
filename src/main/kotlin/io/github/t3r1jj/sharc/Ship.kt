@@ -21,8 +21,18 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
         }
     }
 
+    fun isInitialized(): Boolean = !shellCalculators.isEmpty()
+
+    fun isLoaded(): Boolean = isArtilleryLoaded() && isFireControlsLoaded()
+
+    fun isArtilleryLoaded(): Boolean = !artilleryShells.values.contains(null)
+
+    fun isFireControlsLoaded(): Boolean = !fireControls.values.contains(null)
+
     var icon: String? = null
-    var nation: Nation? = null
+    var nation: String? = null
+
+    fun getNation(): Nation = Nation.getEnum(nation!!)
 
     enum class RangeMod(private val modifier: Double) {
         AFT(1.2),
@@ -42,8 +52,9 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
 
     enum class Nation {
         GERMANY, UK, OTHER;
+
         companion object {
-            fun getEnum(id: String) : Nation = when (id) {
+            fun getEnum(id: String): Nation = when (id) {
                 "germany" -> GERMANY
                 "uk" -> UK
                 else -> OTHER

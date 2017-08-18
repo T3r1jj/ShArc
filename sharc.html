@@ -16,62 +16,42 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
             integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
             crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"
+            crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="sharc.css">
 </head>
 <body>
-<div class="col-md-12 main-col">
-    <div class="form-row">
-        <div class="form-group form-group-left">
-            <label for="nation-select" class="col-form-label">Nation</label>
-            <select class="form-control" id="nation-select" onchange="loadShips();">
-            </select>
+<div class="col-md-12">
+    <div class="main-row">
+        <div class="form-row">
+            <div class="form-group form-group-left">
+                <label for="nation-select" class="col-form-label">Nation</label>
+                <select class="form-control" id="nation-select">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="type-select" class="col-form-label">Type</label>
+                <select class="form-control" id="type-select">
+                </select>
+            </div>
+            <div class="form-group form-group-right">
+                <label for="ship-select" class="col-form-label">Ship</label>
+                <select class="form-control" id="ship-select">
+                </select>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="type-select" class="col-form-label">Type</label>
-            <select class="form-control" id="type-select" onchange="loadShips();">
-            </select>
-        </div>
-        <div class="form-group form-group-right">
-            <label for="ship-select" class="col-form-label">Ship</label>
-            <select class="form-control" id="ship-select">
-            </select>
-        </div>
+        <button type="button" class="btn btn-primary" id="ship-add">Add</button>
     </div>
-    <button type="button" class="btn btn-primary">Add</button>
+    <div>
+        <ol id="selected-ships-list">
+        </ol>
+    </div>
+    <canvas id="shell-arcs-chart" height="100"></canvas>
 </div>
 <script>
-    var api = new sharc.io.github.t3r1jj.sharc.external.WarshipsAPI();
     window.onload = function () {
-        api.loadBasicInfo(function () {
-            var nations = api.shipNations;
-            for (var key in nations) {
-                if (nations.hasOwnProperty(key)) {
-                    $("#nation-select").append(new Option(nations[key], key, false, false));
-                }
-            }
-            var shipTypes = api.shipTypes;
-            for (key in shipTypes) {
-                if (shipTypes.hasOwnProperty(key)) {
-                    $("#type-select").append(new Option(shipTypes[key], key, false, false));
-                }
-            }
-            loadShips();
-        });
-    };
-
-    function loadShips() {
-        console.log("loadships");
-        var selectedNation = $('#nation-select').find('option:selected').val();
-        var selectedType = $('#type-select').find('option:selected').val();
-        var shipSelection = new sharc.io.github.t3r1jj.sharc.external.WarshipsAPI.ShipsSelection(selectedNation, selectedType);
-        api.loadShips(shipSelection, function () {
-            var ships = api.getShips(shipSelection);
-            var shipSelect = $("#ship-select");
-            shipSelect.empty();
-            for (var i = 0; i < ships.length; i++) {
-                shipSelect.append(new Option(ships[i].name, ships[i].id, false, false));
-            }
-        })
+        new sharc.io.github.t3r1jj.sharc.Controller();
     }
 </script>
 </body>

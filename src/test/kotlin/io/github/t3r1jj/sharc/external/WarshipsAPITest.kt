@@ -7,10 +7,9 @@ import kotlin.test.assertTrue
 
 class WarshipsAPITest {
 
-    private val api = WarshipsAPI()
-
     @Test
     fun loadBasicInfo() {
+        val api = WarshipsAPI()
         api.loadBasicInfo {
             assertFalse(api.gameVersion.isBlank(), "Game version should be loaded")
             assertFalse(api.shipNations == null, "Ship nations should be loaded")
@@ -20,15 +19,18 @@ class WarshipsAPITest {
 
     @Test
     fun loadShips() {
-        api.loadBasicInfo { }
-        val shipsSelection = WarshipsAPI.ShipsSelection("usa", "Destroyer")
-        api.loadShips(shipsSelection, {
-            assertFalse(api.ships[shipsSelection] == null || api.ships[shipsSelection]!!.isEmpty(), "Selected ships should be loaded")
-        })
+        val api = WarshipsAPI()
+        api.loadBasicInfo {
+            val shipsSelection = WarshipsAPI.ShipsSelection("usa", "Destroyer")
+            api.loadShips(shipsSelection, {
+                assertFalse(api.ships[shipsSelection] == null || api.ships[shipsSelection]!!.isEmpty(), "Selected ships should be loaded")
+            })
+        }
     }
 
     @Test
     fun loadShipModules() {
+        val api = WarshipsAPI()
         val ship = Ship("4179572528", "Großer Kurfürst", 10)
         ship.fireControls.put("3339104048", null)
         api.loadShipModules(listOf(ship), {
@@ -39,6 +41,7 @@ class WarshipsAPITest {
 
     @Test
     fun loadShipArtillery() {
+        val api = WarshipsAPI()
         val ship = Ship("4179572528", "Großer Kurfürst", 10)
         ship.artilleryShells.put("3336548144", null)
         ship.artilleryShells.put("3337596720", null)

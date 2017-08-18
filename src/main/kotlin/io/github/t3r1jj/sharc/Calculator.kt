@@ -176,11 +176,11 @@ class Calculator(private val shell: Shell) {
 
     @JsName("calculateArmorToActivateFuse")
     fun calculateArmorToActivateFuse(shell: Shell, ship: Ship) : Double = when (shell.type) {
-        Shell.Type.AP -> when (ship.nation) {
+        Shell.Type.AP -> when (ship.getNation()) {
             Ship.Nation.UK -> shell.D / 12
             else -> shell.D / 6
         }
-        Shell.Type.HE -> when (ship.nation) {
+        Shell.Type.HE -> when (ship.getNation()) {
             Ship.Nation.UK -> shell.D / 4
             Ship.Nation.GERMANY -> shell.D / 4
             else -> shell.D / 6
