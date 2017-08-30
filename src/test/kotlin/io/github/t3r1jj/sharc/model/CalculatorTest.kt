@@ -1,4 +1,4 @@
-package io.github.t3r1jj.sharc
+package io.github.t3r1jj.sharc.model
 
 import kotlin.js.Math
 import kotlin.test.Test

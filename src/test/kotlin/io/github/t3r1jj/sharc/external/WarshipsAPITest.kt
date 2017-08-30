@@ -1,8 +1,8 @@
 package io.github.t3r1jj.sharc.external
 
-import io.github.t3r1jj.sharc.Hull
-import io.github.t3r1jj.sharc.Shell
-import io.github.t3r1jj.sharc.Ship
+import io.github.t3r1jj.sharc.model.Hull
+import io.github.t3r1jj.sharc.model.Shell
+import io.github.t3r1jj.sharc.model.Ship
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

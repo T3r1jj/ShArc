@@ -1,7 +1,7 @@
 package io.github.t3r1jj.sharc.external
 
-import io.github.t3r1jj.sharc.Shell
-import io.github.t3r1jj.sharc.Ship
+import io.github.t3r1jj.sharc.model.Shell
+import io.github.t3r1jj.sharc.model.Ship
 import io.github.t3r1jj.sharc.utils.JsonUtils
 import org.w3c.xhr.XMLHttpRequest
 

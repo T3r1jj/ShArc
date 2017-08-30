@@ -2,6 +2,9 @@ package io.github.t3r1jj.sharc
 
 import io.github.t3r1jj.sharc.external.Plotly
 import io.github.t3r1jj.sharc.external.WarshipsAPI
+import io.github.t3r1jj.sharc.model.Calculator
+import io.github.t3r1jj.sharc.model.Shell
+import io.github.t3r1jj.sharc.model.Ship
 import kotlin.browser.document
 import kotlin.js.Math
 import kotlin.js.json

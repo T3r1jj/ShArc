@@ -1,7 +1,7 @@
 package io.github.t3r1jj.sharc.external
 
-import io.github.t3r1jj.sharc.Hull
-import io.github.t3r1jj.sharc.Ship
+import io.github.t3r1jj.sharc.model.Hull
+import io.github.t3r1jj.sharc.model.Ship
 import io.github.t3r1jj.sharc.utils.JsonUtils
 
 class ShipParser(val shipNations: dynamic) {

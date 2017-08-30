@@ -1,5 +1,7 @@
 package io.github.t3r1jj.sharc
 
+import io.github.t3r1jj.sharc.model.Calculator
+import io.github.t3r1jj.sharc.model.Shell
 import org.w3c.dom.MessageEvent
 import org.w3c.dom.Worker
 import org.w3c.dom.url.URL
