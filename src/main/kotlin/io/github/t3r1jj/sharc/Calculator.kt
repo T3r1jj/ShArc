@@ -2,7 +2,7 @@ package io.github.t3r1jj.sharc
 
 import kotlin.js.Math
 
-class Calculator(private val shell: Shell) {
+class Calculator(internal val shell: Shell) {
 
     var range = Double.POSITIVE_INFINITY
     var angleOverRange = false

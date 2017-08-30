@@ -1,5 +1,7 @@
 package io.github.t3r1jj.sharc.external
 
+import io.github.t3r1jj.sharc.Hull
+import io.github.t3r1jj.sharc.Shell
 import io.github.t3r1jj.sharc.Ship
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -43,12 +45,14 @@ class WarshipsAPITest {
     fun loadShipArtillery() {
         val api = WarshipsAPI()
         val ship = Ship("4179572528", "Großer Kurfürst", 10)
-        ship.artilleryShells.put("3336548144", null)
-        ship.artilleryShells.put("3337596720", null)
+        val artilleryShells = HashMap<String, Array<Shell>?>()
+        artilleryShells.put("3336548144", null)
+        artilleryShells.put("3337596720", null)
+        ship.hullArtilleryShells.put(Hull("3339464496"), artilleryShells)
         api.loadShipArtillery(ship, {
-            assertTrue(ship.artilleryShells.isNotEmpty(), "Artillery should not be empty")
-            ship.artilleryShells.forEach { fc -> assertFalse(fc.value == null, "Ship artillery shells should be loaded") }
-            ship.artilleryShells.forEach { fc -> fc.value!!.forEach { shell -> assertFalse(shell.type == null, "Shell types should be loaded") } }
+            assertTrue(artilleryShells.isNotEmpty(), "Artillery should not be empty")
+            artilleryShells.forEach { fc -> assertFalse(fc.value == null, "Ship artillery shells should be loaded") }
+            artilleryShells.forEach { fc -> fc.value!!.forEach { shell -> assertFalse(shell.type == null, "Shell types should be loaded") } }
         })
     }
 }

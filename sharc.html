@@ -16,8 +16,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
             integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
             crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"
-            crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     <link rel="stylesheet" href="sharc.css">
 </head>
@@ -47,7 +46,17 @@
         <ol id="selected-ships-list">
         </ol>
     </div>
-    <canvas id="shell-arcs-chart" height="100"></canvas>
+    <div id="chart-div" class="chart-div-invisible">
+        <div id="shell-arcs-chart"></div>
+        <div class="range-div">
+            <input id="range-slider" type="range" min="500" value="0"/>
+            <div class="row">
+                <label class="pull-left">0.5 km</label>
+                <label for="range-slider" id="range-label" class="mx-auto">Range: 0 km</label>
+                <label id="max-range-label" class="pull-right">0 km</label>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     window.onload = function () {

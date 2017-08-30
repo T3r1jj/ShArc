@@ -1,12 +1,37 @@
 .form-row > .form-group {
     margin: 10px;
 }
-.form-row > .form-group-left  {
+
+.form-row > .form-group-left {
     margin-left: auto;
 }
-.form-row > .form-group-right  {
+
+.form-row > .form-group-right {
     margin-right: auto;
 }
+
 .main-row {
     text-align: center;
+}
+
+#chart-div {
+    width: 100%;
+    text-align: center;
+}
+
+.chart-div-visible {
+    display: block;
+}
+
+.chart-div-invisible {
+    display: none;
+}
+
+.range-div{
+    margin-left: 32px;
+    margin-right: 32px;
+}
+
+#range-slider {
+    width: 100%;
 }
