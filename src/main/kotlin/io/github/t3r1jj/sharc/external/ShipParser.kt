@@ -15,6 +15,7 @@ class ShipParser(val shipNations: dynamic) {
         ship.icon = shipData.images.small
         ship.isPremium = shipData.is_premium
         ship.isDemo = shipData.has_demo_profile
+        ship.icon = shipData.images.small
         artilleryIds = shipData.modules.artillery as Array<Long>
         for (fireControl in shipData.modules.fire_control as Array<Long>) {
             ship.fireControls.put(fireControl.toString(), null)

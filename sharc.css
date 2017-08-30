@@ -27,11 +27,21 @@
     display: none;
 }
 
-.range-div{
+.range-div {
     margin-left: 32px;
     margin-right: 32px;
 }
 
 #range-slider {
     width: 100%;
+}
+
+#selected-ships-list > li > img {
+    margin-bottom: 12px;
+    margin-right: 4px;
+}
+
+#selected-ships-list > li > button {
+    margin-bottom: 4px;
+    margin-left: 4px;
 }

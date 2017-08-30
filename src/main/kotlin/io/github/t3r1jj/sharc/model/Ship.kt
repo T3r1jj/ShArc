@@ -50,7 +50,7 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
     var icon: String? = null
     var nation: String? = null
 
-    fun getMaxRange(): Double = fireControls.maxBy { fireControl -> fireControl.value!! }!!.value!!
+    fun getMaxRange(): Double = fireControls.maxBy { fireControl -> fireControl.value ?: 0.0 }?.value ?: 0.0 ?: 0.0
 
     fun getNation(): Nation = Nation.getEnum(nation!!)
 

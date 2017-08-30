@@ -11,7 +11,7 @@ class WarshipsAPI {
 
     private val BASIC_INFO_ENDPOINT = "$ROOT_URL/encyclopedia/info/?application_id=$APP_ID&fields=ship_types%2Cship_nations%2Cgame_version"
     private fun WARSHIP_NAMES_ENPOINT(nation: String, type: String): String =
-            "$ROOT_URL/encyclopedia/ships/?application_id=$APP_ID&fields=name%2Ctier%2Cmodules.hull%2Cimages.small%2Cmodules.artillery%2Cmodules.hull%2Cmodules.fire_control%2Cmodules_tree.is_default%2Cmodules_tree.name%2Cmodules_tree.next_modules%2Cis_premium%2Chas_demo_profile&type=$type&nation=$nation"
+            "$ROOT_URL/encyclopedia/ships/?application_id=$APP_ID&fields=name%2Ctier%2Cmodules.hull%2Cimages.small%2Cmodules.artillery%2Cmodules.hull%2Cmodules.fire_control%2Cmodules_tree.is_default%2Cmodules_tree.name%2Cmodules_tree.next_modules%2Cis_premium%2Chas_demo_profile%2Cimages.small&type=$type&nation=$nation"
 
     private fun WARSHIP_MODULES_ENDPOINT(moduleIds: List<String>): String {
         val endpoint = "$ROOT_URL/encyclopedia/modules/?application_id=$APP_ID"
@@ -64,7 +64,6 @@ class WarshipsAPI {
             return
         }
         get(WARSHIP_NAMES_ENPOINT(shipsSelection.nation, shipsSelection.type), { json ->
-            console.log(json)
             val loadedShips = ArrayList<Ship>()
             for ((id, shipData) in JsonUtils.jsonToDynamicMap(json.data)) {
                 val ship = ShipParser(shipNations).parseShip(id, shipData, shipsSelection)

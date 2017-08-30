@@ -53,7 +53,14 @@ class Controller : ArrayList<Ship>() {
     private fun loadShip(selectedShip: Ship) {
         val listItem = document.createElement("li").asDynamic()
         listItem.id = selectedShip.id
-        listItem.innerText = selectedShip.name + " " + selectedShip.nation + " T" + selectedShip.tier + " "
+        selectedShip.icon?.let {
+            val img = document.createElement("img");
+            img.setAttribute("src", selectedShip.icon!!)
+            img.setAttribute("alt", selectedShip.name + "-wows-wg-icon")
+            img.setAttribute("height", "38px")
+            listItem.appendChild(img)
+        }
+        listItem.innerHTML += selectedShip.name + " " + selectedShip.nation + " T" + selectedShip.tier + " "
         val removeButton = document.createElement("button").asDynamic()
         removeButton.setAttribute("class", removeButtonClass)
         removeButton.innerText = "X"
