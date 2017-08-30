@@ -38,13 +38,16 @@ class Calculator(internal val shell: Shell) {
 
     @JsName("getXCoordinates")
     fun getXCoordinates(distance: Number): Array<Double> = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
+
     @JsName("getYCoordinates")
     fun getYCoordinates(distance: Number): Array<Double> = yAngleCoordinates!![findClosestIndex(distance.toDouble())]
+
     @JsName("getCalculatedDistance")
     fun getCalculatedDistance(distance: Number): Double {
         val xCoordinates = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
         return xCoordinates[xCoordinates.lastIndex]
     }
+
     @JsName("getTime")
     fun getTime(distance: Number): Array<Double> = angleTimes!![findClosestIndex(distance.toDouble())]
 
@@ -61,6 +64,14 @@ class Calculator(internal val shell: Shell) {
                 minError = currentError
                 closestIndex = index
             }
+        }
+        closestIndex = normalizeDataIndex(closestIndex)
+        return closestIndex
+    }
+
+    private fun normalizeDataIndex(closestIndex: Int): Int {
+        if (closestIndex == 0 && closestIndex != xAngleCoordinates!!.lastIndex) {
+            return 1
         }
         return closestIndex
     }
@@ -82,8 +93,7 @@ class Calculator(internal val shell: Shell) {
             if (angleOverRange) {
                 break
             }
-            val alpha = (angle.toDouble() / degreeIterations) * Math.PI / 180
-            calculateArc(alpha)
+            calculateArc(angle.toDouble() / degreeIterations)
             xAngleCoordinates.add(xCoordinates.toTypedArray())
             yAngleCoordinates.add(yCoordinates.toTypedArray())
             angleTimes.add(time.toTypedArray())
@@ -101,14 +111,22 @@ class Calculator(internal val shell: Shell) {
 
     @JsName("calculateArc")
     fun calculateArc(angle: Number) {
+        val alpha = angle.toDouble() * Math.PI / 180
         xCoordinates.clear()
         yCoordinates.clear()
         time.clear()
-        var vX = Math.cos(angle.toDouble()) * shell.vInit
-        var vY = Math.sin(angle.toDouble()) * shell.vInit
+        var vX = Math.cos(alpha) * shell.vInit
+        var vY = Math.sin(alpha) * shell.vInit
         var y = 0.0
         var x = 0.0
         var t = 0.0
+        var dt = Calculator.dt
+        when (angle.toInt().times(10)) {
+            in 0..5 -> dt = Calculator.dt / 100
+            in 6..10 -> dt = Calculator.dt / 50
+            in 11..15 -> dt = Calculator.dt / 25
+            in 16..20 -> dt = Calculator.dt / 5
+        }
 
         xCoordinates.add(x)
         yCoordinates.add(y)
@@ -175,7 +193,7 @@ class Calculator(internal val shell: Shell) {
     }
 
     @JsName("calculateArmorToActivateFuse")
-    fun calculateArmorToActivateFuse(shell: Shell, ship: Ship) : Double = when (shell.type) {
+    fun calculateArmorToActivateFuse(shell: Shell, ship: Ship): Double = when (shell.type) {
         Shell.Type.AP -> when (ship.getNation()) {
             Ship.Nation.UK -> shell.D / 12
             else -> shell.D / 6
