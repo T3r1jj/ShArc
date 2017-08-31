@@ -52,8 +52,6 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
 
     fun getMaxRange(): Double = fireControls.maxBy { fireControl -> fireControl.value ?: 0.0 }?.value ?: 0.0 ?: 0.0
 
-    fun getNation(): Nation = Nation.getEnum(nation!!)
-
     fun getTier() = when (tier) {
         1 -> "I"
         2 -> "II"
@@ -84,15 +82,4 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
 
     }
 
-    enum class Nation {
-        GERMANY, UK, OTHER;
-
-        companion object {
-            fun getEnum(id: String): Nation = when (id) {
-                "germany" -> GERMANY
-                "uk" -> UK
-                else -> OTHER
-            }
-        }
-    }
 }

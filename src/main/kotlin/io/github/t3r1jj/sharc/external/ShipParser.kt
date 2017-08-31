@@ -4,7 +4,7 @@ import io.github.t3r1jj.sharc.model.Hull
 import io.github.t3r1jj.sharc.model.Ship
 import io.github.t3r1jj.sharc.utils.JsonUtils
 
-class ShipParser(val shipNations: dynamic) {
+class ShipParser(private val shipNations: dynamic) {
 
     private lateinit var ship: Ship
     private lateinit var artilleryIds: Array<Long>

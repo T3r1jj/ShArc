@@ -45,3 +45,23 @@
     margin-bottom: 4px;
     margin-left: 4px;
 }
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.footer {
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#info-table th {
+    text-align: center;
+}

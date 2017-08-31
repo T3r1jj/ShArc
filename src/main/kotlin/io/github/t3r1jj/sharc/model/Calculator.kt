@@ -51,6 +51,15 @@ class Calculator(internal val shell: Shell) {
     @JsName("getTime")
     fun getTime(distance: Number): Array<Double> = angleTimes!![findClosestIndex(distance.toDouble())]
 
+    @JsName("getImpactAngle")
+    fun getImpactAngle(distance: Number): Double = impactAngles!![findClosestIndex(distance.toDouble())]
+
+    @JsName("getDeckArmor")
+    fun getDeckArmor(distance: Number): Double = deckArmors!![findClosestIndex(distance.toDouble())]
+
+    @JsName("getBeltArmor")
+    fun getBeltArmor(distance: Number): Double = beltArmors!![findClosestIndex(distance.toDouble())]
+
     fun hasData(): Boolean = xAngleCoordinates != null
 
     private fun findClosestIndex(distance: Double): Int {
@@ -120,13 +129,7 @@ class Calculator(internal val shell: Shell) {
         var y = 0.0
         var x = 0.0
         var t = 0.0
-        var dt = Calculator.dt
-        when (angle.toInt().times(10)) {
-            in 0..5 -> dt = Calculator.dt / 100
-            in 6..10 -> dt = Calculator.dt / 50
-            in 11..15 -> dt = Calculator.dt / 25
-            in 16..20 -> dt = Calculator.dt / 5
-        }
+        val dt = getSmoothedDt(angle)
 
         xCoordinates.add(x)
         yCoordinates.add(y)
@@ -154,8 +157,16 @@ class Calculator(internal val shell: Shell) {
         val v = Math.sqrt(vY * vY + vX * vX)
         val hitPen = shell.pen * Math.pow(v, 1.1) * Math.pow(shell.m, 0.55) / Math.pow(shell.D * 1000, 0.65)
         impactAngle = Math.atan(Math.abs(vY) / Math.abs(vX))
-        beltArmor = Math.cos(impactAngle) * hitPen
-        deckArmor = Math.sin(impactAngle) * hitPen
+        beltArmor = Math.sin(impactAngle) * hitPen
+        deckArmor = Math.cos(impactAngle) * hitPen
+    }
+
+    private fun getSmoothedDt(angle: Number): Double = when (angle.toInt().times(10)) {
+        in 0..5 -> Calculator.dt / 100
+        in 6..10 -> Calculator.dt / 50
+        in 11..15 -> Calculator.dt / 25
+        in 16..20 -> Calculator.dt / 5
+        else -> Calculator.dt
     }
 
     private fun T(y: Double) = T - L * y
@@ -189,20 +200,6 @@ class Calculator(internal val shell: Shell) {
     private fun sign(x: Double): Double = when {
         x > 0 -> 1.0
         x < 0 -> -1.0
-        else -> 0.0
-    }
-
-    @JsName("calculateArmorToActivateFuse")
-    fun calculateArmorToActivateFuse(shell: Shell, ship: Ship): Double = when (shell.type) {
-        Shell.Type.AP -> when (ship.getNation()) {
-            Ship.Nation.UK -> shell.D / 12
-            else -> shell.D / 6
-        }
-        Shell.Type.HE -> when (ship.getNation()) {
-            Ship.Nation.UK -> shell.D / 4
-            Ship.Nation.GERMANY -> shell.D / 4
-            else -> shell.D / 6
-        }
         else -> 0.0
     }
 

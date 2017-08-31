@@ -1,5 +1,6 @@
 group 'io.github.t3r1jj'
 version '1.0-SNAPSHOT'
+buildConfigField "int", "myNewProp", "1"
 
 buildscript {
     ext.kotlin_version = '1.1.4-eap-54'

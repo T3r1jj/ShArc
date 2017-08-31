@@ -1,10 +1,11 @@
-package io.github.t3r1jj.sharc.controller
+package io.github.t3r1jj.sharc.presenter
 
+import io.github.t3r1jj.sharc.UI
 import io.github.t3r1jj.sharc.external.WarshipsAPI
 import io.github.t3r1jj.sharc.model.Ship
 import kotlin.browser.document
 
-class Controller(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE) {
+class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Presenter {
     var removeButtonClass = "btn btn-danger"
     private val api = WarshipsAPI()
 
@@ -18,18 +19,20 @@ class Controller(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE) {
     private var maxRangeLabel: dynamic = UI.MAX_RANGE_LABEL.getElement()
     private var chartDiv: dynamic = UI.CHART_DIV.getElement()
 
-    private val chartControllers = arrayOf(ArcsChartController(UI.SHELL_ARCS_CHART.id),
-            TimeChartController(UI.SHELL_TIME_CHART.id))
+    private val subPresenters = arrayOf(
+            InfoPresenter(UI.INFO_TABLE),
+            ArcsChartPresenter(UI.SHELL_ARCS_CHART),
+            TimeChartPresenter(UI.SHELL_TIME_CHART))
 
     init {
         initializeBasicInfo()
         nationSelect.onchange = { loadShips {} }
         typeSelect.onchange = { loadShips {} }
-        shipAddButton.onclick = { addShip {} }
-        rangeSlider.oninput = {
-            reloadRangeSlider()
-            reloadCharts()
+        shipAddButton.onclick = {
+            shipAddButton.disabled = true
+            addShip {}
         }
+        rangeSlider.oninput = { reloadView(this, getRange()) }
     }
 
     private fun addShip(callback: (Boolean) -> Unit) {
@@ -70,22 +73,24 @@ class Controller(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE) {
         }
         selectedShip.initCalculators()
         calculateArcs()
-        reloadCharts()
+        reloadView(this, getRange())
     }
 
     private fun removeShip(id: String) {
         this.remove(this.first { ship -> ship.id == id })
         selectedShipsList.removeChild(document.getElementById(id))
-        reloadCharts()
+        reloadView(this, getRange())
+    }
+
+    override fun reloadView(ships: Collection<Ship>, range: Double) {
+        hideChartDiv(this.isEmpty())
+        reloadRangeSlider()
+        subPresenters.forEach { it.reloadView(this, getRange()) }
+        shipAddButton.disabled = this.size == MAX_SIZE
     }
 
     private fun getRange() =
             (rangeSlider.value as String).toDouble()
-
-    private fun reloadCharts() {
-        hideChartDiv(this.isEmpty())
-        chartControllers.forEach { it.reloadChart(this, getRange()) }
-    }
 
     private fun hideChartDiv(hide: Boolean) {
         if (hide) {
@@ -109,7 +114,6 @@ class Controller(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE) {
     }
 
     private fun getMaxRange() = this.maxBy { ship -> ship.getMaxRange() }?.getMaxRange() ?: 0.0
-
 
 
     private fun getSelectedShip(): Ship? {
@@ -161,7 +165,7 @@ class Controller(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE) {
             for (i in 0 until ships.size) {
                 val option = document.createElement("option").asDynamic()
                 option.value = ships[i].id
-                option.text = ships[i].getTier() + " " + ships[i].name
+                option.text = ships[i].getTier() + ". " + ships[i].name
                 if (ships[i].isPremium) {
                     option.text += " (P)"
                 }
@@ -180,12 +184,4 @@ class Controller(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE) {
         }
     }
 
-    enum class UI(val id: String) {
-        NATION_SELECT("nation-select"), TYPE_SELECT("type-select"), SHIP_SELECT("ship-select"),
-        SHIP_ADD_BUTTON("ship-add"), SELECTED_SHIPS_LIST("selected-ships-list"), SHELL_ARCS_CHART("shell-arcs-chart"),
-        SHELL_TIME_CHART("shell-time-chart"),
-        RANGE_SLIDER("range-slider"), RANGE_LABEL("range-label"), MAX_RANGE_LABEL("max-range-label"), CHART_DIV("chart-div");
-
-        fun getElement(): dynamic = document.getElementById(id)
-    }
 }
