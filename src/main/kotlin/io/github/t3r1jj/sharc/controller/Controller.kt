@@ -1,22 +1,12 @@
-package io.github.t3r1jj.sharc
+package io.github.t3r1jj.sharc.controller
 
-import io.github.t3r1jj.sharc.external.Plotly
 import io.github.t3r1jj.sharc.external.WarshipsAPI
-import io.github.t3r1jj.sharc.model.Calculator
-import io.github.t3r1jj.sharc.model.Shell
 import io.github.t3r1jj.sharc.model.Ship
 import kotlin.browser.document
-import kotlin.js.Math
-import kotlin.js.json
 
-class Controller : ArrayList<Ship>() {
-
-    val MAX_SIZE = 8
+class Controller(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE) {
     var removeButtonClass = "btn btn-danger"
     private val api = WarshipsAPI()
-    private val CHART_TYPE = "line"
-    private val CHART_LAYOUT = json("xaxis" to json("title" to "Distance [m]", "hoverformat" to ",f"),
-            "yaxis" to json("title" to "Height [m]", "hoverformat" to ",f"))
 
     private var nationSelect: dynamic = UI.NATION_SELECT.getElement()
     private var typeSelect: dynamic = UI.TYPE_SELECT.getElement()
@@ -28,12 +18,18 @@ class Controller : ArrayList<Ship>() {
     private var maxRangeLabel: dynamic = UI.MAX_RANGE_LABEL.getElement()
     private var chartDiv: dynamic = UI.CHART_DIV.getElement()
 
+    private val chartControllers = arrayOf(ArcsChartController(UI.SHELL_ARCS_CHART.id),
+            TimeChartController(UI.SHELL_TIME_CHART.id))
+
     init {
         initializeBasicInfo()
         nationSelect.onchange = { loadShips {} }
         typeSelect.onchange = { loadShips {} }
         shipAddButton.onclick = { addShip {} }
-        rangeSlider.oninput = { reloadShellArcsChart() }
+        rangeSlider.oninput = {
+            reloadRangeSlider()
+            reloadCharts()
+        }
     }
 
     private fun addShip(callback: (Boolean) -> Unit) {
@@ -74,28 +70,21 @@ class Controller : ArrayList<Ship>() {
         }
         selectedShip.initCalculators()
         calculateArcs()
-        reloadShellArcsChart()
+        reloadCharts()
     }
 
     private fun removeShip(id: String) {
         this.remove(this.first { ship -> ship.id == id })
         selectedShipsList.removeChild(document.getElementById(id))
-        reloadShellArcsChart()
+        reloadCharts()
     }
 
     private fun getRange() =
             (rangeSlider.value as String).toDouble()
 
-    private fun reloadShellArcsChart() {
+    private fun reloadCharts() {
         hideChartDiv(this.isEmpty())
-        reloadRangeSlider()
-        val data = ArrayList<dynamic>()
-        this.forEach { ship ->
-            ship.shellCalculators.forEach { (shell, calculator) ->
-                data.add(prepareChartTrace(ship, shell, calculator))
-            }
-        }
-        Plotly.newPlot(UI.SHELL_ARCS_CHART.id, data.toTypedArray(), CHART_LAYOUT)
+        chartControllers.forEach { it.reloadChart(this, getRange()) }
     }
 
     private fun hideChartDiv(hide: Boolean) {
@@ -121,13 +110,7 @@ class Controller : ArrayList<Ship>() {
 
     private fun getMaxRange() = this.maxBy { ship -> ship.getMaxRange() }?.getMaxRange() ?: 0.0
 
-    private fun prepareChartTrace(ship: Ship, shell: Shell, calculator: Calculator): dynamic {
-        val range = Math.min(ship.getMaxRange(), getRange())
-        return json("x" to calculator.getXCoordinates(range),
-                "y" to calculator.getYCoordinates(range),
-                "name" to shell.toString(),
-                "type" to CHART_TYPE)
-    }
+
 
     private fun getSelectedShip(): Ship? {
         return try {
@@ -178,7 +161,7 @@ class Controller : ArrayList<Ship>() {
             for (i in 0 until ships.size) {
                 val option = document.createElement("option").asDynamic()
                 option.value = ships[i].id
-                option.text = ships[i].getTier() + ". " + ships[i].name
+                option.text = ships[i].getTier() + " " + ships[i].name
                 if (ships[i].isPremium) {
                     option.text += " (P)"
                 }
@@ -200,6 +183,7 @@ class Controller : ArrayList<Ship>() {
     enum class UI(val id: String) {
         NATION_SELECT("nation-select"), TYPE_SELECT("type-select"), SHIP_SELECT("ship-select"),
         SHIP_ADD_BUTTON("ship-add"), SELECTED_SHIPS_LIST("selected-ships-list"), SHELL_ARCS_CHART("shell-arcs-chart"),
+        SHELL_TIME_CHART("shell-time-chart"),
         RANGE_SLIDER("range-slider"), RANGE_LABEL("range-label"), MAX_RANGE_LABEL("max-range-label"), CHART_DIV("chart-div");
 
         fun getElement(): dynamic = document.getElementById(id)
