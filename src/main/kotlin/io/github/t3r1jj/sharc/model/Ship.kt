@@ -10,16 +10,20 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
     var isDemo = false
 
     fun initCalculators() {
-        var maxRange = 0.0
-        for (fireControl in fireControls) {
-            maxRange = Math.max(fireControl.value!!)
+        if (isInitialized()) {
+            return
         }
+        for (fireControl in fireControls) {
+            fireControlsRange = Math.max(fireControlsRange, fireControl.value ?: 0.0)
+        }
+        maxRange = fireControlsRange * 1.2
         hullArtilleryShells.forEach { (hull, artilleryShells) ->
             artilleryShells.forEach { artilleryShell ->
-                var maxArtilleryRange = 0.0
-                RangeMod.values().map { rangeMod -> rangeMod.modifyRange(maxRange, artilleryShells.values.first()!!.first()) }.forEach { range -> maxArtilleryRange = Math.max(maxArtilleryRange, range) }
                 artilleryShell.value!!.forEach { shell ->
-                    val previousCalculator = shellCalculators.put(shell, Calculator(shell, maxArtilleryRange))
+                    val previousCalculator = shellCalculators.put(shell, Calculator(shell, maxRange))
+                    if (!shell.info.hulls.contains(hull)) {
+                        shell.info.hulls.add(hull)
+                    }
                     previousCalculator?.let {
                         aggregateShellInfo(shell, previousCalculator.shell, hull)
                     }
@@ -30,16 +34,13 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
 
     private fun aggregateShellInfo(shell: Shell, previousShell: Shell, hull: Hull) {
         shell.info.hulls = previousShell.info.hulls
-        if (!shell.info.hulls.contains(hull)) {
-            shell.info.hulls.add(hull)
-        }
         shell.info.types = previousShell.info.types
         if (!shell.info.types.contains(previousShell.type!!)) {
             shell.info.types.add(previousShell.type!!)
         }
     }
 
-    fun isInitialized(): Boolean = !shellCalculators.isEmpty()
+    private fun isInitialized(): Boolean = !shellCalculators.isEmpty()
 
     fun isLoaded(): Boolean = isArtilleryLoaded() && isFireControlsLoaded()
 
@@ -50,7 +51,8 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
     var icon: String? = null
     var nation: String? = null
 
-    fun getMaxRange(): Double = fireControls.maxBy { fireControl -> fireControl.value ?: 0.0 }?.value ?: 0.0 ?: 0.0
+    var maxRange: Double = 0.0
+    var fireControlsRange: Double = 0.0
 
     fun getTier() = when (tier) {
         1 -> "I"
@@ -64,22 +66,6 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
         9 -> "IX"
         10 -> "X"
         else -> "nulla"
-    }
-
-    enum class RangeMod(private val modifier: Double) {
-        AFT(1.2),
-        SPOTTING_AIRCRAFT(1.2) {
-            override fun modifyRange(range: Double, shell: Shell): Double {
-                return if (shell.D <= 0.139) {
-                    super.modifyRange(range, shell)
-                } else {
-                    range
-                }
-            }
-        };
-
-        internal open fun modifyRange(range: Double, shell: Shell): Double = range * modifier
-
     }
 
 }

@@ -6,9 +6,9 @@ import kotlin.browser.document
 import kotlin.js.Math
 
 class InfoPresenter(infoTable: UI) : Presenter {
-    
+
     private val infoTableDiv = infoTable.getElement()
-    
+
     override fun reloadView(ships: Collection<Ship>, range: Double) {
         infoTableDiv.innerHTML = ""
         infoTableDiv.append(prepareHeader())
@@ -18,6 +18,8 @@ class InfoPresenter(infoTable: UI) : Presenter {
                 val tr = document.createElement("tr")
                 val tdShipConfig = document.createElement("td")
                 tdShipConfig.textContent = shell.toString()
+                val tdFireControlsRange = document.createElement("td")
+                tdFireControlsRange.textContent = (ship.fireControlsRange / 1000.0).format()
                 val tdFlyTime = document.createElement("td")
                 tdFlyTime.textContent = calculator.getTime(range).last().format()
                 val tdHitBeltAngle = document.createElement("td")
@@ -29,6 +31,7 @@ class InfoPresenter(infoTable: UI) : Presenter {
                 val tdDeckArmor = document.createElement("td")
                 tdDeckArmor.textContent = Math.round(calculator.getBeltArmor(range)).toString()
                 tr.append(tdShipConfig)
+                tr.append(tdFireControlsRange)
                 tr.append(tdFlyTime)
                 tr.append(tdHitBeltAngle)
                 tr.append(tdHitDeckAngle)
@@ -45,7 +48,9 @@ class InfoPresenter(infoTable: UI) : Presenter {
         thead.setAttribute("class", "thead-inverse")
         val tr = document.createElement("tr")
         val thShipConfig = document.createElement("th")
-        thShipConfig.textContent = "Ship config"
+        thShipConfig.textContent = "Ship configs"
+        val thFireControlsRange = document.createElement("th")
+        thFireControlsRange.textContent = "Fire controls range [km]"
         val thFlyTime = document.createElement("th")
         thFlyTime.textContent = "Fly time [s]"
         val thHitBeltAngle = document.createElement("th")
@@ -53,10 +58,11 @@ class InfoPresenter(infoTable: UI) : Presenter {
         val thHitDeckAngle = document.createElement("th")
         thHitDeckAngle.textContent = "Deck hit angle [deg]"
         val thBeltArmor = document.createElement("th")
-        thBeltArmor.textContent = "Belt armor [mm]"
+        thBeltArmor.textContent = "Belt armor pen [mm]"
         val thDeckArmor = document.createElement("th")
-        thDeckArmor.textContent = "Deck armor [mm]"
+        thDeckArmor.textContent = "Deck armor pen [mm]"
         tr.append(thShipConfig)
+        tr.append(thFireControlsRange)
         tr.append(thFlyTime)
         tr.append(thHitBeltAngle)
         tr.append(thHitDeckAngle)

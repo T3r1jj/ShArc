@@ -4,9 +4,9 @@ import io.github.t3r1jj.sharc.UI
 import io.github.t3r1jj.sharc.external.WarshipsAPI
 import io.github.t3r1jj.sharc.model.Ship
 import kotlin.browser.document
+import kotlin.js.Math
 
 class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Presenter {
-    var removeButtonClass = "btn btn-danger"
     private val api = WarshipsAPI()
 
     private var nationSelect: dynamic = UI.NATION_SELECT.getElement()
@@ -15,9 +15,12 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
     private var shipAddButton: dynamic = UI.SHIP_ADD_BUTTON.getElement()
     private var selectedShipsList: dynamic = UI.SELECTED_SHIPS_LIST.getElement()
     private var rangeSlider: dynamic = UI.RANGE_SLIDER.getElement()
-    private var rangeLabel: dynamic = UI.RANGE_LABEL.getElement()
     private var maxRangeLabel: dynamic = UI.MAX_RANGE_LABEL.getElement()
     private var chartDiv: dynamic = UI.CHART_DIV.getElement()
+    private var alertDiv: dynamic = UI.ALERT_DIV.getElement()
+    private var titleHeader: dynamic = UI.TITLE_HEADER.getElement()
+    private var rangeInput: dynamic = UI.RANGE_INPUT.getElement()
+    private var range = 0.0
 
     private val subPresenters = arrayOf(
             InfoPresenter(UI.INFO_TABLE),
@@ -25,31 +28,74 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
             TimeChartPresenter(UI.SHELL_TIME_CHART))
 
     init {
-        initializeBasicInfo()
-        nationSelect.onchange = { loadShips {} }
-        typeSelect.onchange = { loadShips {} }
+        blockUI(true)
+        initializeBasicInfo {
+            setVersion()
+            handleResult(it)
+        }
+        nationSelect.onchange = {
+            blockUI(true)
+            loadShips { handleResult(it) }
+        }
+        typeSelect.onchange = {
+            blockUI(true)
+            loadShips { handleResult(it) }
+        }
         shipAddButton.onclick = {
-            shipAddButton.disabled = true
-            addShip {}
+            blockUI(true)
+            loadShip { handleResult(it) }
         }
-        rangeSlider.oninput = { reloadView(this, getRange()) }
+        rangeSlider.oninput = {
+            range = getSliderRange()
+            reloadView(this, range)
+        }
+        rangeInput.oninput = {
+            range = getInputRange()
+            reloadView(this, range)
+        }
     }
 
-    private fun addShip(callback: (Boolean) -> Unit) {
+    private fun setVersion() {
+        if (api.gameVersion.isNotBlank()) {
+            titleHeader.title += " (v" + api.gameVersion + ")"
+        } else {
+            titleHeader.title += " (unknown version, connection lost?)"
+        }
+    }
+
+    private fun blockUI(doBlock: Boolean) {
+        turnButtonLoading(doBlock)
+        nationSelect.disabled = doBlock
+        typeSelect.disabled = doBlock
+        shipSelect.disabled = doBlock
+    }
+
+    private fun turnButtonLoading(on: Boolean) {
+        shipAddButton.disabled = on || this.size == MAX_SIZE || getSelectedShip() == null
+        if (on) {
+            shipAddButton.classList.add("btn-loading")
+        } else {
+            shipAddButton.classList.remove("btn-loading")
+        }
+    }
+
+    private fun loadShip(callback: (Throwable?) -> Unit) {
         val selectedShip = getSelectedShip()
-        selectedShip?.let {
-            if (!this.contains(selectedShip) && this.size < MAX_SIZE) {
-                api.loadShip(selectedShip, {
-                    loadShip(selectedShip)
-                    callback(true)
-                })
-            } else {
-                callback(false)
-            }
+        if (selectedShip != null && !this.contains(selectedShip) && this.size < MAX_SIZE) {
+            api.loadShip(selectedShip, { e ->
+                if (e != null) {
+                    callback(e)
+                } else {
+                    addShip(selectedShip)
+                    callback(null)
+                }
+            })
+        } else {
+            callback(null)
         }
     }
 
-    private fun loadShip(selectedShip: Ship) {
+    private fun addShip(selectedShip: Ship) {
         val listItem = document.createElement("li").asDynamic()
         listItem.id = selectedShip.id
         selectedShip.icon?.let {
@@ -59,62 +105,65 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
             img.setAttribute("height", "38px")
             listItem.appendChild(img)
         }
-        listItem.innerHTML += selectedShip.name + " " + selectedShip.nation + " T" + selectedShip.tier + " "
+        listItem.innerHTML += formatShipListItemText(selectedShip)
         val removeButton = document.createElement("button").asDynamic()
-        removeButton.setAttribute("class", removeButtonClass)
+        removeButton.setAttribute("class", "btn btn-danger")
         removeButton.innerText = "X"
         removeButton.onclick = { removeShip(selectedShip.id) }
         listItem.appendChild(removeButton)
         selectedShipsList.appendChild(listItem)
         this.add(selectedShip)
-        if (this.size == 1 && (rangeSlider.getAttribute("min") as String).toDouble() == getRange()) {
-            reloadRangeSlider()
-            rangeSlider.value = getMaxRange()
-        }
         selectedShip.initCalculators()
         calculateArcs()
-        reloadView(this, getRange())
+        if (this.size == 1 && (rangeSlider.getAttribute("min") as String).toDouble() == range) {
+            reloadRangeView(getMaxRange())
+        }
+        reloadView(this, range)
     }
+
+    private fun formatShipListItemText(selectedShip: Ship) =
+            selectedShip.name + " " + selectedShip.nation + " T" + selectedShip.tier + " "
 
     private fun removeShip(id: String) {
         this.remove(this.first { ship -> ship.id == id })
         selectedShipsList.removeChild(document.getElementById(id))
-        reloadView(this, getRange())
+        reloadView(this, range)
     }
 
     override fun reloadView(ships: Collection<Ship>, range: Double) {
         hideChartDiv(this.isEmpty())
-        reloadRangeSlider()
-        subPresenters.forEach { it.reloadView(this, getRange()) }
-        shipAddButton.disabled = this.size == MAX_SIZE
+        if (!this.isEmpty()) {
+            reloadRangeView(range)
+            subPresenters.forEach { it.reloadView(this, range) }
+        }
     }
 
-    private fun getRange() =
+    private fun getSliderRange() =
             (rangeSlider.value as String).toDouble()
+
+    private fun getInputRange() =
+            (rangeInput.value as String).toDouble() * 1000.0
 
     private fun hideChartDiv(hide: Boolean) {
         if (hide) {
-            chartDiv.classList.remove(UI.CHART_DIV.id + "-visible")
-            chartDiv.classList.add(UI.CHART_DIV.id + "-invisible")
+            chartDiv.classList.add("hidden")
         } else {
-            chartDiv.classList.remove(UI.CHART_DIV.id + "-invisible")
-            chartDiv.classList.add(UI.CHART_DIV.id + "-visible")
+            chartDiv.classList.remove("hidden")
         }
     }
 
-    private fun reloadRangeSlider() {
+    private fun reloadRangeView(range: Double) {
         val maxRange = getMaxRange()
+        this.range = Math.min(range, maxRange)
+        console.log(getMaxRange())
         rangeSlider.setAttribute("max", maxRange)
-        val range = getRange()
-        if (range > maxRange) {
-            rangeSlider.value = maxRange
-        }
-        rangeLabel.innerText = "Range: " + range.div(1000) + " km"
+        rangeInput.setAttribute("max", maxRange / 1000.0)
+        rangeSlider.value = this.range
+        rangeInput.value = this.range.div(1000.0)
         maxRangeLabel.innerText = maxRange.div(1000).toString() + " km"
     }
 
-    private fun getMaxRange() = this.maxBy { ship -> ship.getMaxRange() }?.getMaxRange() ?: 0.0
-
+    private fun getMaxRange(): Double = this.maxBy { ship -> ship.maxRange }?.maxRange ?: 0.0 ?: 0.0
 
     private fun getSelectedShip(): Ship? {
         return try {
@@ -124,23 +173,27 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
         }
     }
 
-    private fun initializeBasicInfo() {
-        api.loadBasicInfo({
-            val shipNations = api.getShipNations()
-            for ((nationId, nationText) in shipNations) {
-                val option = document.createElement("option").asDynamic()
-                option.value = nationId
-                option.text = nationText
-                nationSelect.add(option)
+    private fun initializeBasicInfo(callback: (Throwable?) -> Unit) {
+        api.loadBasicInfo({ e ->
+            if (e != null) {
+                callback(e)
+            } else {
+                val shipNations = api.getShipNations()
+                for ((nationId, nationText) in shipNations) {
+                    val option = document.createElement("option").asDynamic()
+                    option.value = nationId
+                    option.text = nationText
+                    nationSelect.add(option)
+                }
+                val shipTypes = api.getShipTypes()
+                for ((typeId, typeText) in shipTypes) {
+                    val option = document.createElement("option").asDynamic()
+                    option.value = typeId
+                    option.text = typeText
+                    typeSelect.add(option)
+                }
+                loadShips({ callback(it) })
             }
-            val shipTypes = api.getShipTypes()
-            for ((typeId, typeText) in shipTypes) {
-                val option = document.createElement("option").asDynamic()
-                option.value = typeId
-                option.text = typeText
-                typeSelect.add(option)
-            }
-            loadShips({})
         })
     }
 
@@ -157,24 +210,28 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
         return WarshipsAPI.ShipsSelection(selectedNation, selectedType)
     }
 
-    private fun loadShips(callback: () -> Unit) {
+    private fun loadShips(callback: (Throwable?) -> Unit) {
         val shipsSelection = getShipsSelection()
-        api.loadShips(shipsSelection, {
-            val ships = api.getShips(shipsSelection)
-            clearSelect(shipSelect)
-            for (i in 0 until ships.size) {
-                val option = document.createElement("option").asDynamic()
-                option.value = ships[i].id
-                option.text = ships[i].getTier() + ". " + ships[i].name
-                if (ships[i].isPremium) {
-                    option.text += " (P)"
+        api.loadShips(shipsSelection, { e ->
+            if (e != null) {
+                callback(e)
+            } else {
+                val ships = api.getShips(shipsSelection)
+                clearSelect(shipSelect)
+                for (i in 0 until ships.size) {
+                    val option = document.createElement("option").asDynamic()
+                    option.value = ships[i].id
+                    option.text = ships[i].getTier() + ". " + ships[i].name
+                    if (ships[i].isPremium) {
+                        option.text += " (P)"
+                    }
+                    if (ships[i].isDemo) {
+                        option.text += " [Demo]"
+                    }
+                    shipSelect.add(option)
                 }
-                if (ships[i].isDemo) {
-                    option.text += " [Demo]"
-                }
-                shipSelect.add(option)
+                callback(null)
             }
-            callback()
         })
     }
 
@@ -182,6 +239,16 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
         while ((select.options.length as Int) > 0) {
             select.remove(0)
         }
+    }
+
+    private fun handleResult(e: Throwable?) {
+        if (e != null) {
+            console.error(e)
+            alertDiv.classList.remove("hidden")
+        } else {
+            alertDiv.classList.add("hidden")
+        }
+        blockUI(false)
     }
 
 }

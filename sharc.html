@@ -23,9 +23,14 @@
     <link rel="stylesheet" href="sharc.css">
 </head>
 <body>
-<div class="col-md-12">
+<div class="col-md-11 mx-auto">
     <div class="main-row">
-        <h2>WOWs Ship shell arcs</h2>
+        <h2 id="title-header" data-toggle="tooltip" data-placement="bottom"
+            title="Sharc is a comparison tool for different ships shell arcs and fly times, based on World of Warships data">
+            Sharc - WOWs ship shell arcs</h2>
+        <div class="alert alert-danger hidden" role="alert" id="alert">
+            <strong>Oh snap!</strong> Something went wrong while fetching the data
+        </div>
         <div class="form-row">
             <div class="form-group form-group-left">
                 <label for="nation-select" class="col-form-label">Nation</label>
@@ -43,26 +48,30 @@
                 </select>
             </div>
         </div>
-        <button type="button" class="btn btn-primary" id="ship-add">Add</button>
+        <button type="button" class="btn btn-primary" id="ship-add" disabled>Add</button>
     </div>
     <div class="row">
         <div class="col-md-8">
-            <label for="selected-ships-list">Selected ships:</label>
+            <h4><label for="selected-ships-list">Selected ships (max 5):</label></h4>
             <ol id="selected-ships-list">
             </ol>
         </div>
         <div class="col-md-4 text-right">
-            Sharc is a comparison tool for different ships shell arcs and fly times, based on World of Warships data.
+            <span class="btn btn-info" data-toggle="tooltip" data-placement="top"
+                  title="Each vessel range is additionally increased by 20% due to possibility of AFT or spotting aircraft.&#13;&#10;Default properties are set in place of internal data (shell drag / krupp values).">
+                ?
+            </span>
+            <a class="btn btn-warning" data-toggle="tooltip" data-placement="top" title="Donate"
+               href="https://t3r1jj.github.io/support.html">Donate</a>
+            <a class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Donate"
+               href="https://github.com/T3r1jj/Sharc/issues">Report issue</a>
         </div>
     </div>
-    <div id="chart-div" class="chart-div-invisible">
+    <div id="chart-div" class="hidden">
         <h4>General info</h4>
         <div class="row">
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <table id="info-table" class="table table-striped table-bordered table-condensed table-hover"></table>
-            </div>
-            <div class="col-md-2 text-right">
-                AFT (based on caliber) and spotting aircraft (every ship) automatically included. Default properties in place of internal data (shell drag / krupp values).
             </div>
         </div>
         <h4>Range selection</h4>
@@ -70,7 +79,11 @@
             <input id="range-slider" type="range" min="0" value="0" step="100"/>
             <div class="row">
                 <label class="pull-left">0 km</label>
-                <label for="range-slider" id="range-label" class="mx-auto">Range: 0 km</label>
+                <span class="mx-auto form-group form-inline">
+                    <label for="range-slider" id="range-label">Range: </label>
+                    <input class="form-control" id="range-input" type="number" name="quantity" min="0" step="0.01" value="0">
+                    <label for="range-input"> km</label>
+                </span>
                 <label id="max-range-label" class="pull-right">0 km</label>
             </div>
         </div>
@@ -79,18 +92,19 @@
         <h4>Fly time</h4>
         <div id="shell-time-chart"></div>
     </div>
-
 </div>
 <footer class="footer">
-    <span>Thanks to
+    <div>
+        <a href="https://github.com/T3r1jj/Sharc">v1.0.0-SNAPSHOT</a>
+        thanks to
         <a href="https://kotlinlang.org/">Kotlin [Apache 2.0]</a>,
         <a href="https://plot.ly/">plotly.js [MIT]</a>,
         <a href="https://wargaming.net/">Wargaming API</a>
-    </span>
+    </div>
 </footer>
 <script>
     window.onload = function () {
-        new sharc.io.github.t3r1jj.sharc.presenter.MainPresenter(2);
+        new sharc.io.github.t3r1jj.sharc.presenter.MainPresenter(5);
     }
 </script>
 </body>
