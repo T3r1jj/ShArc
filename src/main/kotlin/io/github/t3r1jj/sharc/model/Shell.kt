@@ -13,12 +13,13 @@ class Shell(val D: Double, val m: Double, val vInit: Double) {
     val cD = 0.321
     val cwLin = 100 + 1000 / 3 * D
     val k = 0.5 * cD * (D / 2) * (D / 2) * Math.PI / m
+    var art: String? = null
     var name: String? = null
     var type: Type? = null
     val info: ShellInfo = ShellInfo()
 
     override fun toString() =
-        info.toString() + " (" + name + ")"
+        info.toString() + " (" + art + ")"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -55,8 +56,8 @@ class Shell(val D: Double, val m: Double, val vInit: Double) {
     }
 
     class ShellInfo {
-        var hulls = ArrayList<Hull>()
-        var types = ArrayList<Type>()
+        var hulls = HashSet<Hull>()
+        var types = HashSet<Type>()
 
         override fun toString(): String {
             val stringBuilder = StringBuilder(" ")

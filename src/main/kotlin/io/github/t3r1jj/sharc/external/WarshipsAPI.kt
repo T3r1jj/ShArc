@@ -123,6 +123,9 @@ class WarshipsAPI {
                                 callback(null)
                             }
                         } catch (e: Throwable) {
+                            console.log("hull: " + hull)
+                            console.log("art: " + artilleryId)
+                            console.log("ship: " + ship.id)
                             callback(e)
                         }
                     })
@@ -136,10 +139,11 @@ class WarshipsAPI {
         val shellsJson = JsonUtils.jsonToDynamicMap(artillery.shells)
         val shells = ArrayList<Shell>()
         for (shellJson in shellsJson) {
-            val shellName = shellJson.value.name
-            val shell = Shell(artillery.slots["0"].name.toString().split(" ")[0].toDouble() / 1000, shellJson.value.bullet_mass, shellJson.value.bullet_speed)
+            val shellArt = artillery.slots["0"].name
+            val shell = Shell(shellArt.toString().split(" ")[0].toDouble() / 1000, shellJson.value.bullet_mass, shellJson.value.bullet_speed)
             shell.type = shellJson.value.type
-            shell.name = shellName
+            shell.art = shellArt
+            shell.name = shellJson.value.name
             shells.add(shell)
         }
         artilleryShells.put(artillery.slots["0"].name, shells.toTypedArray())

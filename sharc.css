@@ -3,15 +3,26 @@ html {
     min-height: 100%;
 }
 
-body {
-    margin-bottom: 60px;
+body.double-footer {
+    margin-bottom: 140px;
 }
 
-.footer {
+.sticky-footer {
     text-align: center;
     position: absolute;
     bottom: 0;
     width: 100%;
+}
+
+.sticky-footer.double-footer {
+    bottom: 115px;
+}
+
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -4px 40px #888;
 }
 
 h2 {
@@ -47,9 +58,13 @@ h4 {
     display: none;
 }
 
-.range-div {
-    margin-left: 32px;
-    margin-right: 32px;
+.range-div .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.range-div label {
+    margin: 8px;
 }
 
 #range-slider {

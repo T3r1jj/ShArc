@@ -1,5 +1,5 @@
 group 'io.github.t3r1jj'
-version '1.0-SNAPSHOT'
+version '1.0.0-RC'
 buildConfigField "int", "myNewProp", "1"
 
 buildscript {

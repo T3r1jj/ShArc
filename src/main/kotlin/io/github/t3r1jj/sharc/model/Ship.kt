@@ -21,23 +21,19 @@ class Ship constructor(val id: String, val name: String, val tier: Int) {
             artilleryShells.forEach { artilleryShell ->
                 artilleryShell.value!!.forEach { shell ->
                     val previousCalculator = shellCalculators.put(shell, Calculator(shell, maxRange))
-                    if (!shell.info.hulls.contains(hull)) {
-                        shell.info.hulls.add(hull)
-                    }
                     previousCalculator?.let {
-                        aggregateShellInfo(shell, previousCalculator.shell, hull)
+                        aggregateShellInfo(shell, previousCalculator.shell)
                     }
+                    shell.info.hulls.add(hull)
+                    shell.info.types.add(shell.type!!)
                 }
             }
         }
     }
 
-    private fun aggregateShellInfo(shell: Shell, previousShell: Shell, hull: Hull) {
+    private fun aggregateShellInfo(shell: Shell, previousShell: Shell) {
         shell.info.hulls = previousShell.info.hulls
         shell.info.types = previousShell.info.types
-        if (!shell.info.types.contains(previousShell.type!!)) {
-            shell.info.types.add(previousShell.type!!)
-        }
     }
 
     private fun isInitialized(): Boolean = !shellCalculators.isEmpty()

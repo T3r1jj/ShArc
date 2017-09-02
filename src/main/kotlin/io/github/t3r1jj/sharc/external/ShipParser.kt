@@ -23,21 +23,27 @@ class ShipParser(private val shipNations: dynamic) {
         for (hull in shipData.modules.hull as Array<Long>) {
             ship.hullArtilleryShells.put(Hull(hull.toString()), HashMap())
         }
-        parseDefaultArt(shipData)
+        parseDefaultArtHull(shipData)
         parseHullUpgrToArt(shipData)
         parseArtUpgrToArt(shipData)
         parseHullUpgrToHull(shipData)
+        parseArtUpgrToHull(shipData)
         return ship
     }
 
-    private fun parseArtUpgrToArt(shipData: dynamic) {
+    private fun parseDefaultArtHull(shipData: dynamic) {
         for ((moduleId, moduleData) in JsonUtils.jsonToDynamicMap(shipData.modules_tree)) {
             val artilleryId = artilleryIds.find { artilleryId -> artilleryId.toString() == moduleId }
             artilleryId?.let {
-                if (moduleData.next_modules != null) {
-                    (moduleData.next_modules as Array<Long>)
-                            .filter { artilleryIds.contains(it) }
-                            .forEach { upgrId -> ship.hullArtilleryShells.entries.find { it.value.keys.contains(artilleryId.toString()) }?.value?.put(upgrId.toString(), null) }
+                if (moduleData.is_default as Boolean) {
+                    for ((moduleId2, moduleData2) in JsonUtils.jsonToDynamicMap(shipData.modules_tree)) {
+                        val hull = ship.hullArtilleryShells.keys.find { (hull) -> hull == moduleId2 }
+                        hull?.let {
+                            if (moduleData2.is_default as Boolean) {
+                                ship.hullArtilleryShells[hull]!!.put(artilleryId.toString(), null)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -56,12 +62,14 @@ class ShipParser(private val shipNations: dynamic) {
         }
     }
 
-    private fun parseDefaultArt(shipData: dynamic) {
+    private fun parseArtUpgrToArt(shipData: dynamic) {
         for ((moduleId, moduleData) in JsonUtils.jsonToDynamicMap(shipData.modules_tree)) {
             val artilleryId = artilleryIds.find { artilleryId -> artilleryId.toString() == moduleId }
             artilleryId?.let {
-                if (moduleData.is_default as Boolean) {
-                    ship.hullArtilleryShells.entries.forEach { (_, artilleryShells) -> artilleryShells.put(artilleryId.toString(), null) }
+                if (moduleData.next_modules != null) {
+                    (moduleData.next_modules as Array<Long>)
+                            .filter { artilleryIds.contains(it) }
+                            .forEach { upgrId -> ship.hullArtilleryShells.entries.find { it.value.keys.contains(artilleryId.toString()) }?.value?.put(upgrId.toString(), null) }
                 }
             }
         }
@@ -80,6 +88,21 @@ class ShipParser(private val shipNations: dynamic) {
                                 }
                     }
                     hull.name = moduleData.name
+                }
+            }
+        }
+    }
+
+    private fun parseArtUpgrToHull(shipData: dynamic) {
+        for ((moduleId, moduleData) in JsonUtils.jsonToDynamicMap(shipData.modules_tree)) {
+            val artilleryId = artilleryIds.find { artilleryId -> artilleryId.toString() == moduleId }
+            artilleryId?.let {
+                if (moduleData.next_modules != null) {
+                    (moduleData.next_modules as Array<Long>)
+                            .flatMap { ship.hullArtilleryShells.entries.filter { hullEntry -> hullEntry.key.id == it.toString() } }
+                            .forEach { upgrHull ->
+                                upgrHull.value.put(artilleryId.toString(), null)
+                            }
                 }
             }
         }

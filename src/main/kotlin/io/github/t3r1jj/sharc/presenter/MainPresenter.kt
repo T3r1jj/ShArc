@@ -3,6 +3,7 @@ package io.github.t3r1jj.sharc.presenter
 import io.github.t3r1jj.sharc.UI
 import io.github.t3r1jj.sharc.external.WarshipsAPI
 import io.github.t3r1jj.sharc.model.Ship
+import org.w3c.dom.get
 import kotlin.browser.document
 import kotlin.js.Math
 
@@ -19,7 +20,9 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
     private var chartDiv: dynamic = UI.CHART_DIV.getElement()
     private var alertDiv: dynamic = UI.ALERT_DIV.getElement()
     private var titleHeader: dynamic = UI.TITLE_HEADER.getElement()
+    private var aboutFooter: dynamic = UI.ABOUT_FOOTER.getElement()
     private var rangeInput: dynamic = UI.RANGE_INPUT.getElement()
+    private var rangeFooter: dynamic = UI.RANGE_FOOTER.getElement()
     private var range = 0.0
 
     private val subPresenters = arrayOf(
@@ -131,7 +134,7 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
     }
 
     override fun reloadView(ships: Collection<Ship>, range: Double) {
-        hideChartDiv(this.isEmpty())
+        hideUI(this.isEmpty())
         if (!this.isEmpty()) {
             reloadRangeView(range)
             subPresenters.forEach { it.reloadView(this, range) }
@@ -144,18 +147,23 @@ class MainPresenter(private val MAX_SIZE: Int) : ArrayList<Ship>(MAX_SIZE), Pres
     private fun getInputRange() =
             (rangeInput.value as String).toDouble() * 1000.0
 
-    private fun hideChartDiv(hide: Boolean) {
+    private fun hideUI(hide: Boolean) {
         if (hide) {
             chartDiv.classList.add("hidden")
+            rangeFooter.classList.add("hidden")
+            aboutFooter.classList.remove("double-footer")
+            document.getElementsByTagName("body")[0]!!.classList.remove("double-footer")
         } else {
             chartDiv.classList.remove("hidden")
+            rangeFooter.classList.remove("hidden")
+            aboutFooter.classList.add("double-footer")
+            document.getElementsByTagName("body")[0]!!.classList.add("double-footer")
         }
     }
 
     private fun reloadRangeView(range: Double) {
         val maxRange = getMaxRange()
         this.range = Math.min(range, maxRange)
-        console.log(getMaxRange())
         rangeSlider.setAttribute("max", maxRange)
         rangeInput.setAttribute("max", maxRange / 1000.0)
         rangeSlider.value = this.range

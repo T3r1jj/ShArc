@@ -37,38 +37,54 @@ class Calculator(internal val shell: Shell) {
     var beltArmors: Array<Double>? = null
 
     @JsName("getXCoordinates")
-    fun getXCoordinates(distance: Number): Array<Double> = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
+    fun getXCoordinates(distance: Number): Array<Double> = xAngleCoordinates!![findClosestAngleIndex(distance.toDouble())]
 
     @JsName("getYCoordinates")
-    fun getYCoordinates(distance: Number): Array<Double> = yAngleCoordinates!![findClosestIndex(distance.toDouble())]
+    fun getYCoordinates(distance: Number): Array<Double> = yAngleCoordinates!![findClosestAngleIndex(distance.toDouble())]
 
     @JsName("getCalculatedDistance")
     fun getCalculatedDistance(distance: Number): Double {
-        val xCoordinates = xAngleCoordinates!![findClosestIndex(distance.toDouble())]
+        val xCoordinates = xAngleCoordinates!![findClosestAngleIndex(distance.toDouble())]
         return xCoordinates[xCoordinates.lastIndex]
     }
 
     @JsName("getTime")
-    fun getTime(distance: Number): Array<Double> = angleTimes!![findClosestIndex(distance.toDouble())]
+    fun getTime(distance: Number): Array<Double> = angleTimes!![findClosestAngleIndex(distance.toDouble())]
 
     @JsName("getImpactAngle")
-    fun getImpactAngle(distance: Number): Double = impactAngles!![findClosestIndex(distance.toDouble())]
+    fun getImpactAngle(distance: Number): Double = impactAngles!![findClosestAngleIndex(distance.toDouble())]
 
     @JsName("getDeckArmor")
-    fun getDeckArmor(distance: Number): Double = deckArmors!![findClosestIndex(distance.toDouble())]
+    fun getDeckArmor(distance: Number): Double = deckArmors!![findClosestAngleIndex(distance.toDouble())]
 
     @JsName("getBeltArmor")
-    fun getBeltArmor(distance: Number): Double = beltArmors!![findClosestIndex(distance.toDouble())]
+    fun getBeltArmor(distance: Number): Double = beltArmors!![findClosestAngleIndex(distance.toDouble())]
 
     fun hasData(): Boolean = xAngleCoordinates != null
 
-    private fun findClosestIndex(distance: Double): Int {
+    private fun findClosestAngleIndex(range: Double): Int {
         var closestIndex = 0
-        var minError = distance
+        var minError = range
         for (index in 0..xAngleCoordinates!!.lastIndex) {
             val xCoordinates = xAngleCoordinates!![index]
             val angleDistance = xCoordinates[xCoordinates.lastIndex]
-            val currentError = Math.abs(angleDistance - distance)
+            val currentError = Math.abs(angleDistance - range)
+            if (currentError < minError) {
+                minError = currentError
+                closestIndex = index
+            }
+        }
+        closestIndex = normalizeDataIndex(closestIndex)
+        return closestIndex
+    }
+
+    fun findClosestAngleXIndex(range: Double, distance: Double): Int {
+        val xCoordinates = getXCoordinates(range)
+        var closestIndex = 0
+        var minError = distance
+        for (index in 0..xCoordinates.lastIndex) {
+            val xCoordinate = xCoordinates[index]
+            val currentError = Math.abs(xCoordinate - distance)
             if (currentError < minError) {
                 minError = currentError
                 closestIndex = index
