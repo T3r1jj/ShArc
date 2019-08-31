@@ -4,7 +4,6 @@ if (typeof kotlin === 'undefined') {
 var sharc = function (_, Kotlin) {
   'use strict';
   var Enum = Kotlin.kotlin.Enum;
-  var Unit = Kotlin.kotlin.Unit;
   var removeAll = Kotlin.kotlin.collections.removeAll_qafx1e$;
   var to = Kotlin.kotlin.to_ujzrz7$;
   var json = Kotlin.kotlin.js.json_pyyo18$;
@@ -14,6 +13,7 @@ var sharc = function (_, Kotlin) {
   var toList = Kotlin.kotlin.collections.toList_abgq59$;
   var reversed = Kotlin.kotlin.collections.reversed_7wnvza$;
   var toMap = Kotlin.kotlin.collections.toMap_6hr0sd$;
+  var contains_0 = Kotlin.kotlin.text.contains_li3zpu$;
   var reversedArray = Kotlin.kotlin.collections.reversedArray_4b5429$;
   var asIterable = Kotlin.kotlin.collections.asIterable_us0mfu$;
   var Throwable = Error;
@@ -27,6 +27,7 @@ var sharc = function (_, Kotlin) {
   var HashSet_init = Kotlin.kotlin.collections.HashSet_init_287e2$;
   var last = Kotlin.kotlin.collections.last_us0mfu$;
   var NoSuchElementException = Kotlin.kotlin.NoSuchElementException;
+  var until = Kotlin.kotlin.ranges.until_dqglrj$;
   var ArrayList = Kotlin.kotlin.collections.ArrayList;
   var iterator = Kotlin.kotlin.js.iterator_s8jyvk$;
   UI.prototype = Object.create(Enum.prototype);
@@ -202,7 +203,6 @@ var sharc = function (_, Kotlin) {
   function HTTPClient$get$lambda(closure$url, closure$callback, this$HTTPClient) {
     return function () {
       this$HTTPClient.get_a1vqyy$(closure$url, closure$callback);
-      return Unit;
     };
   }
   HTTPClient.prototype.get_a1vqyy$ = function (url, callback) {
@@ -232,21 +232,18 @@ var sharc = function (_, Kotlin) {
     return function (it) {
       closure$request.endTime = Kotlin.Long.fromNumber((new Date()).getTime());
       closure$request.callback(JSON.parse(closure$xmlHttp.responseText));
-      return Unit;
     };
   }
   function HTTPClient$doGet$lambda_0(closure$request) {
     return function (it) {
       closure$request.endTime = Kotlin.Long.fromNumber((new Date()).getTime());
       closure$request.callback(json([to('error', 'timeout')]));
-      return Unit;
     };
   }
   function HTTPClient$doGet$lambda_1(closure$request, closure$xmlHttp) {
     return function (it) {
       closure$request.endTime = Kotlin.Long.fromNumber((new Date()).getTime());
       closure$request.callback(json([to('error', closure$xmlHttp.statusText)]));
-      return Unit;
     };
   }
   HTTPClient.prototype.doGet_0 = function (request) {
@@ -306,13 +303,13 @@ var sharc = function (_, Kotlin) {
     this.ship_0.isPremium = shipData.is_premium;
     this.ship_0.isDemo = shipData.has_demo_profile;
     this.ship_0.icon = shipData.images.small;
-    this.artilleryIds_0 = Kotlin.isArray(tmp$ = shipData.modules.artillery) ? tmp$ : Kotlin.throwCCE();
-    tmp$_1 = Kotlin.isArray(tmp$_0 = shipData.modules.fire_control) ? tmp$_0 : Kotlin.throwCCE();
+    this.artilleryIds_0 = Array.isArray(tmp$ = shipData.modules.artillery) ? tmp$ : Kotlin.throwCCE();
+    tmp$_1 = Array.isArray(tmp$_0 = shipData.modules.fire_control) ? tmp$_0 : Kotlin.throwCCE();
     for (tmp$_2 = 0; tmp$_2 !== tmp$_1.length; ++tmp$_2) {
       var fireControl = tmp$_1[tmp$_2];
       this.ship_0.fireControls.put_xwzc9p$(fireControl.toString(), null);
     }
-    tmp$_4 = Kotlin.isArray(tmp$_3 = shipData.modules.hull) ? tmp$_3 : Kotlin.throwCCE();
+    tmp$_4 = Array.isArray(tmp$_3 = shipData.modules.hull) ? tmp$_3 : Kotlin.throwCCE();
     for (tmp$_5 = 0; tmp$_5 !== tmp$_4.length; ++tmp$_5) {
       var hull = tmp$_4[tmp$_5];
       this.ship_0.hullArtilleryShells.put_xwzc9p$(new Hull(hull.toString()), HashMap_init());
@@ -409,7 +406,7 @@ var sharc = function (_, Kotlin) {
       if (hull_0 != null) {
         var tmp$_2;
         if (moduleData.next_modules != null) {
-          var $receiver_0 = Kotlin.isArray(tmp$_2 = moduleData.next_modules) ? tmp$_2 : Kotlin.throwCCE();
+          var $receiver_0 = Array.isArray(tmp$_2 = moduleData.next_modules) ? tmp$_2 : Kotlin.throwCCE();
           var destination = Kotlin.kotlin.collections.ArrayList_init_ww73n8$();
           var tmp$_3;
           for (tmp$_3 = 0; tmp$_3 !== $receiver_0.length; ++tmp$_3) {
@@ -453,7 +450,7 @@ var sharc = function (_, Kotlin) {
       if (artilleryId != null) {
         var tmp$_2;
         if (moduleData.next_modules != null) {
-          var $receiver_0 = Kotlin.isArray(tmp$_2 = moduleData.next_modules) ? tmp$_2 : Kotlin.throwCCE();
+          var $receiver_0 = Array.isArray(tmp$_2 = moduleData.next_modules) ? tmp$_2 : Kotlin.throwCCE();
           var destination = Kotlin.kotlin.collections.ArrayList_init_ww73n8$();
           var tmp$_3;
           for (tmp$_3 = 0; tmp$_3 !== $receiver_0.length; ++tmp$_3) {
@@ -518,7 +515,7 @@ var sharc = function (_, Kotlin) {
         if (hull_0 != null) {
           var tmp$_3;
           if (moduleData.next_modules != null) {
-            var $receiver_0 = Kotlin.isArray(tmp$_3 = moduleData.next_modules) ? tmp$_3 : Kotlin.throwCCE();
+            var $receiver_0 = Array.isArray(tmp$_3 = moduleData.next_modules) ? tmp$_3 : Kotlin.throwCCE();
             var destination = Kotlin.kotlin.collections.ArrayList_init_ww73n8$();
             var tmp$_4;
             for (tmp$_4 = 0; tmp$_4 !== $receiver_0.length; ++tmp$_4) {
@@ -573,7 +570,7 @@ var sharc = function (_, Kotlin) {
       if (artilleryId != null) {
         var tmp$_2;
         if (moduleData.next_modules != null) {
-          var $receiver_0 = Kotlin.isArray(tmp$_2 = moduleData.next_modules) ? tmp$_2 : Kotlin.throwCCE();
+          var $receiver_0 = Array.isArray(tmp$_2 = moduleData.next_modules) ? tmp$_2 : Kotlin.throwCCE();
           var destination = Kotlin.kotlin.collections.ArrayList_init_ww73n8$();
           var tmp$_3;
           for (tmp$_3 = 0; tmp$_3 !== $receiver_0.length; ++tmp$_3) {
@@ -664,7 +661,17 @@ var sharc = function (_, Kotlin) {
   }
   WarshipsAPI.prototype.getShipTypes = function () {
     var $receiver = toList(JsonUtils$Companion_getInstance().jsonToMap_qk3xy8$(this.shipTypes));
-    return toMap(reversed(Kotlin.kotlin.collections.sortedWith_eknfly$($receiver, new Kotlin.kotlin.Comparator_x4fedy$$f(Kotlin.kotlin.comparisons.compareBy$f(WarshipsAPI$getShipTypes$lambda)))));
+    var $receiver_0 = toMap(reversed(Kotlin.kotlin.collections.sortedWith_eknfly$($receiver, new Kotlin.kotlin.Comparator_x4fedy$$f(Kotlin.kotlin.comparisons.compareBy$f(WarshipsAPI$getShipTypes$lambda)))));
+    var destination = Kotlin.kotlin.collections.LinkedHashMap_init_q3lmfv$();
+    var tmp$;
+    tmp$ = $receiver_0.entries.iterator();
+    while (tmp$.hasNext()) {
+      var element = tmp$.next();
+      if (!contains_0(element.key, 'Submarine')) {
+        destination.put_xwzc9p$(element.key, element.value);
+      }
+    }
+    return destination;
   };
   WarshipsAPI.prototype.getShips_r67gg3$ = function (shipsSelection) {
     var tmp$;
@@ -709,7 +716,6 @@ var sharc = function (_, Kotlin) {
          else
           throw e;
       }
-      return Unit;
     };
   }
   WarshipsAPI.prototype.loadBasicInfo_f05bi3$ = function (callback) {
@@ -733,7 +739,6 @@ var sharc = function (_, Kotlin) {
          else
           throw e;
       }
-      return Unit;
     };
   }
   WarshipsAPI.prototype.loadShips_w5p1fw$ = function (shipsSelection, callback) {
@@ -770,7 +775,6 @@ var sharc = function (_, Kotlin) {
        else if (closure$ship.isLoaded()) {
         closure$callback(null);
       }
-      return Unit;
     };
   }
   function WarshipsAPI$loadShip$lambda_0(closure$callback, closure$ship) {
@@ -781,7 +785,6 @@ var sharc = function (_, Kotlin) {
        else if (closure$ship.isLoaded()) {
         closure$callback(null);
       }
-      return Unit;
     };
   }
   WarshipsAPI.prototype.loadShip_man966$ = function (ship, callback) {
@@ -810,7 +813,6 @@ var sharc = function (_, Kotlin) {
          else
           throw e;
       }
-      return Unit;
     };
   }
   WarshipsAPI.prototype.loadShipArtillery_man966$ = function (ship, callback) {
@@ -866,7 +868,6 @@ var sharc = function (_, Kotlin) {
          else
           throw e;
       }
-      return Unit;
     };
   }
   WarshipsAPI.prototype.loadShipModules_ly8ytb$ = function (ships, callback) {
@@ -1538,7 +1539,7 @@ var sharc = function (_, Kotlin) {
       }
     }
     Plotly.newPlot(this.chartDiv.id, Kotlin.kotlin.collections.copyToArray(data), this.getChartLayout(), ChartPresenter$Companion_getInstance().OPTIONS_0);
-    this.setUpCompareOnHover_drqygx$_0(ships, range);
+    this.setUpCompareOnHover_vdcz60$_0(ships, range);
   };
   function ChartPresenter$setUpCompareOnHover$lambda(closure$ships, closure$range, this$ChartPresenter) {
     return function (eventdata) {
@@ -1564,7 +1565,7 @@ var sharc = function (_, Kotlin) {
       return Plotly.Fx.hover(this$ChartPresenter.chartDiv.id, Kotlin.kotlin.collections.copyToArray(hoverData));
     };
   }
-  ChartPresenter.prototype.setUpCompareOnHover_drqygx$_0 = function (ships, range) {
+  ChartPresenter.prototype.setUpCompareOnHover_vdcz60$_0 = function (ships, range) {
     this.chartDiv.getElement().on('plotly_hover', ChartPresenter$setUpCompareOnHover$lambda(ships, range, this));
   };
   function ChartPresenter_init$lambda(this$ChartPresenter) {
@@ -1573,7 +1574,6 @@ var sharc = function (_, Kotlin) {
       if (typeof (tmp$ = !UI$CHART_DIV_getInstance().getElement().classList.contains('hidden')) === 'boolean' ? tmp$ : Kotlin.throwCCE()) {
         Plotly.Plots.resize(this$ChartPresenter.chartDiv.getElement());
       }
-      return Unit;
     };
   }
   ChartPresenter.$metadata$ = {
@@ -1724,7 +1724,6 @@ var sharc = function (_, Kotlin) {
         this$MainPresenter.addShip_0(closure$selectedShip);
         closure$callback(null);
       }
-      return Unit;
     };
   }
   MainPresenter.prototype.loadShip_0 = function (callback) {
@@ -1739,7 +1738,6 @@ var sharc = function (_, Kotlin) {
   function MainPresenter$addShip$lambda(closure$selectedShip, this$MainPresenter) {
     return function () {
       this$MainPresenter.removeShip_0(closure$selectedShip.id);
-      return Unit;
     };
   }
   MainPresenter.prototype.addShip_0 = function (selectedShip) {
@@ -1877,7 +1875,6 @@ var sharc = function (_, Kotlin) {
   function MainPresenter$initializeBasicInfo$lambda$lambda(closure$callback) {
     return function (it) {
       closure$callback(it);
-      return Unit;
     };
   }
   function MainPresenter$initializeBasicInfo$lambda(closure$callback, this$MainPresenter) {
@@ -1911,7 +1908,6 @@ var sharc = function (_, Kotlin) {
         }
         this$MainPresenter.loadShips_0(MainPresenter$initializeBasicInfo$lambda$lambda(closure$callback));
       }
-      return Unit;
     };
   }
   MainPresenter.prototype.initializeBasicInfo_0 = function (callback) {
@@ -1949,13 +1945,18 @@ var sharc = function (_, Kotlin) {
   };
   function MainPresenter$loadShips$lambda(closure$callback, this$MainPresenter, closure$shipsSelection) {
     return function (e) {
+      var tmp$, tmp$_0, tmp$_1, tmp$_2;
       if (e != null) {
         closure$callback(e);
       }
        else {
         var ships = this$MainPresenter.api_0.getShips_r67gg3$(closure$shipsSelection);
         this$MainPresenter.clearSelect_0(this$MainPresenter.shipSelect_0);
-        for (var i = 0; i < ships.length; i++) {
+        tmp$ = until(0, ships.length);
+        tmp$_0 = tmp$.first;
+        tmp$_1 = tmp$.last;
+        tmp$_2 = tmp$.step;
+        for (var i = tmp$_0; i <= tmp$_1; i += tmp$_2) {
           var option = document.createElement('option');
           option.value = ships[i].id;
           option.text = ships[i].getTier() + '. ' + ships[i].name;
@@ -1969,7 +1970,6 @@ var sharc = function (_, Kotlin) {
         }
         closure$callback(null);
       }
-      return Unit;
     };
   }
   MainPresenter.prototype.loadShips_0 = function (callback) {
@@ -1996,60 +1996,51 @@ var sharc = function (_, Kotlin) {
     return function (it) {
       this$MainPresenter.setVersion_0();
       this$MainPresenter.handleResult_0(it);
-      return Unit;
     };
   }
   function MainPresenter_init$lambda$lambda(this$MainPresenter) {
     return function (it) {
       this$MainPresenter.handleResult_0(it);
-      return Unit;
     };
   }
   function MainPresenter_init$lambda_0(this$MainPresenter) {
     return function () {
       this$MainPresenter.blockUI_0(true);
       this$MainPresenter.loadShips_0(MainPresenter_init$lambda$lambda(this$MainPresenter));
-      return Unit;
     };
   }
   function MainPresenter_init$lambda$lambda_0(this$MainPresenter) {
     return function (it) {
       this$MainPresenter.handleResult_0(it);
-      return Unit;
     };
   }
   function MainPresenter_init$lambda_1(this$MainPresenter) {
     return function () {
       this$MainPresenter.blockUI_0(true);
       this$MainPresenter.loadShips_0(MainPresenter_init$lambda$lambda_0(this$MainPresenter));
-      return Unit;
     };
   }
   function MainPresenter_init$lambda$lambda_1(this$MainPresenter) {
     return function (it) {
       this$MainPresenter.handleResult_0(it);
-      return Unit;
     };
   }
   function MainPresenter_init$lambda_2(this$MainPresenter) {
     return function () {
       this$MainPresenter.blockUI_0(true);
       this$MainPresenter.loadShip_0(MainPresenter_init$lambda$lambda_1(this$MainPresenter));
-      return Unit;
     };
   }
   function MainPresenter_init$lambda_3(this$MainPresenter) {
     return function () {
       this$MainPresenter.range_0 = this$MainPresenter.getSliderRange_0();
       this$MainPresenter.reloadView_in72kc$(this$MainPresenter, this$MainPresenter.range_0);
-      return Unit;
     };
   }
   function MainPresenter_init$lambda_4(this$MainPresenter) {
     return function () {
       this$MainPresenter.range_0 = this$MainPresenter.getInputRange_0();
       this$MainPresenter.reloadView_in72kc$(this$MainPresenter, this$MainPresenter.range_0);
-      return Unit;
     };
   }
   MainPresenter.$metadata$ = {
@@ -2100,8 +2091,8 @@ var sharc = function (_, Kotlin) {
   }
   function About$Companion() {
     About$Companion_instance = this;
-    this.VERSION = '1.0.0';
-    this.VERSION_HTML = 'Version: <a href="https://github.com/T3r1jj/Sharc">1.0.0<\/a>';
+    this.VERSION = '1.0.1';
+    this.VERSION_HTML = 'Version: <a href="https://github.com/T3r1jj/Sharc">1.0.1<\/a>';
     this.AUTHOR_URL = 'https://t3r1jj.github.io';
     this.PROJECT_URL = 'https://github.com/T3r1jj/Sharc';
     this.BUG_URL = 'https://github.com/T3r1jj/Sharc/issues';
@@ -2280,5 +2271,3 @@ var sharc = function (_, Kotlin) {
   Kotlin.defineModule('sharc', _);
   return _;
 }(typeof sharc === 'undefined' ? {} : sharc, kotlin);
-
-//# sourceMappingURL=sharc.js.map
