@@ -2,7 +2,7 @@ package io.github.t3r1jj.sharc.utils
 
 class About {
     companion object {
-        const val VERSION = "1.0.0"
+        const val VERSION = "1.0.1"
         const val VERSION_HTML = "Version: <a href=\"https://github.com/T3r1jj/Sharc\">$VERSION</a>"
         const val AUTHOR_URL = "https://t3r1jj.github.io"
         const val PROJECT_URL = "https://github.com/T3r1jj/Sharc"

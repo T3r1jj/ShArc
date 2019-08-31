@@ -35,6 +35,7 @@ class WarshipsAPI {
 
     fun getShipNations(): Map<String, String> = JsonUtils.jsonToMap(shipNations).toList().sortedBy { (_, value) -> value }.reversed().toMap()
     fun getShipTypes(): Map<String, String> = JsonUtils.jsonToMap(shipTypes).toList().sortedBy { (_, value) -> value }.reversed().toMap()
+                                                .filter { !it.key.contains("Submarine") }
     var ships = HashMap<ShipsSelection, Array<Ship>>()
 
     fun getShips(shipsSelection: ShipsSelection): Array<Ship> = ships[shipsSelection]!!.reversedArray()
